@@ -1,0 +1,17 @@
+{% extends "base/base.html" %}
+
+{% block title %}Error {{ code }} {% endblock %}\
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="text-center mt-5">
+                <h1 class="display-4">{{ title if title else "Oops!" }}</h1>
+                <p class="lead">{{ description if description else "Something went wrong." }}</p>
+                <p>{{ comment if comment else "Please try again later." }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

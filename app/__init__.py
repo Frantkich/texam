@@ -18,8 +18,12 @@ def create_app(config_name):
     login_manager.init_app(app)
 
     # Register blueprints
+    # Errors
+    from app.views.error import page_not_found, unauthorized
+    app.register_error_handler(404, page_not_found)
+    app.register_error_handler(401, unauthorized)
+    # Routes
     from app.views import admin, frontend, log
-
     app.register_blueprint(admin.routes)
     app.register_blueprint(frontend.routes)
     app.register_blueprint(log.routes)
@@ -44,7 +48,3 @@ def request_loader(request):
     user.id = email
     return user
 
-
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-    return "Unauthorized", 401
