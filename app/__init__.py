@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_login import LoginManager
 
+
 from app.tools.config import configs
 import app.tools.db as db
 
 
 login_manager = LoginManager()
-
 
 def create_app(config_name):
     app = Flask(
@@ -16,6 +16,7 @@ def create_app(config_name):
     )
     app.config.from_object(configs[config_name])
     login_manager.init_app(app)
+    db.db_connector.init_app(app)
 
     # Register blueprints
     # Errors
@@ -32,19 +33,14 @@ def create_app(config_name):
 
 @login_manager.user_loader
 def user_loader(email):
-    if not db.get_user(email):
-        return
-    user = db.User()
-    user.id = email
-    return user
-
+    return return_user(email)
 
 @login_manager.request_loader
 def request_loader(request):
-    email = request.form.get("email")
-    if not db.get_user(email):
-        return
+    return return_user(request.form.get("email"))
+
+def return_user(email):
+    db.get_user(email)
     user = db.User()
     user.id = email
     return user
-
