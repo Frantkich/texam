@@ -1,3 +1,4 @@
 Flask
 Flask-SQLAlchemy
-mysqlclient
+flask_login
+pymysql
