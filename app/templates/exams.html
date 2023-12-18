@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+
+{% block title %}All Exams{% endblock %}
+
+{% block content %}
+<div class="container">
+    <ul class="list-group">
+        {% for exam in exams %}
+        <li class="list-group-item">
+            {{ exam.name }}
+            <ul>
+                {% for question in exam.questions %}
+                <li>{{ question.description }}</li>
+                <ul>
+                    {% for answer in question.answers %}
+                    <li>{{ answer.score }} - {{ answer.value }}</li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
