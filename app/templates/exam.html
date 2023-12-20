@@ -12,21 +12,31 @@
     <div class="card mt-2 mb-3">
         <div class="card-body">
             <h5 class="card-title">Statistics</h5>
-            <p class="card-text">Here are some statistics:</p>
+            <p class="card-text">Mmmmmmh stats:</p>
             <ul class="list-group">
+                <li class="list-group-item">Description: {{ exam.description }}</li>
+                <li class="list-group-item d-flex">Code:&nbsp;<div id="examCode">{{ exam.code }}</div></li>
+                <li class="list-group-item">Class: {{ exam.class_name }}</li>
+                <li class="list-group-item">Question count: {{ exam.questions | count }}</li>
+            </ul>
+            {% if exam.questions["questions"] | count != 0 %}
+            <ul class="list-group mt-3">
                 <li class="list-group-item">Pass: X times</li>
                 <li class="list-group-item">Sure questions: X</li>
                 <li class="list-group-item">Mean questions: X</li>
             </ul>
+            {% endif %}
         </div>
     </div>
+    <button class="btn btn-danger" id="fetchNewQuestions">Fetch new questions</button>
+    {% if exam.questions["questions"] | count != 0 %}
     <div class="mb-3">
         <button class="btn btn-primary">Pass exam</button>
     </div>
-
     <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse"
         aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
-    <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
+    {% endif %}
+        <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
     <ul id="questions" class="collapse multi-collapse mt-2">
         {% for question in exam.questions %}
         <li class="question mt-2">
@@ -40,8 +50,8 @@
                                 <input class="answerScore" type="number" min="0" max="10" value="{{ answer.score }}"
                                     class="form-control">
                             </div>
-                            <div class="answerValue ms-2 d-flex align-items-center">
-                                {{ answer.value }}
+                            <div class="answerDesc ms-2 d-flex align-items-center">
+                                {{ answer.description }}
                             </div>
                         </div>
                     </div>

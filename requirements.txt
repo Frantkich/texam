@@ -2,3 +2,5 @@ Flask
 Flask-SQLAlchemy
 flask_login
 pymysql
+requests
+bs4
