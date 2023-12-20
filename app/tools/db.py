@@ -45,3 +45,11 @@ def add_exam_questions(name:str, questions:dict) -> Exams:
    exam.questions += json.dumps(questions)
    db_c.session.commit()
    return exam
+
+def update_exam_questions(name:str, questions:dict) -> Exams:
+   exam:Exams = Exams.query.filter_by(name=name).first()
+   if not exam:
+      return None
+   exam.questions = json.dumps(questions)
+   db_c.session.commit()
+   return exam

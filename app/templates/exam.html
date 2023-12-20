@@ -1,0 +1,59 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+{% endblock %}
+
+{% block title %}{{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3 id="examName">{{ exam.name }}</h3>
+    <div class="card mt-2 mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Statistics</h5>
+            <p class="card-text">Here are some statistics:</p>
+            <ul class="list-group">
+                <li class="list-group-item">Pass: X times</li>
+                <li class="list-group-item">Sure questions: X</li>
+                <li class="list-group-item">Mean questions: X</li>
+            </ul>
+        </div>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary">Pass exam</button>
+    </div>
+
+    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse"
+        aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
+    <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
+    <ul id="questions" class="collapse multi-collapse mt-2">
+        {% for question in exam.questions %}
+        <li class="question mt-2">
+            <p class="questionDesc">{{ question.description }}</p>
+            <ul>
+                {% for answer in question.answers %}
+                <li class="answer">
+                    <div class="card mt-2 ">
+                        <div class="card-body p-1 d-flex align-items-center">
+                            <div>
+                                <input class="answerScore" type="number" min="0" max="10" value="{{ answer.score }}"
+                                    class="form-control">
+                            </div>
+                            <div class="answerValue ms-2 d-flex align-items-center">
+                                {{ answer.value }}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/exam.js') }}"></script>
+{% endblock %}

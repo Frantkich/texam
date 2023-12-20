@@ -2,7 +2,7 @@ import os
 
 
 class Config(object):
-    SECRET_KEY = "soumia_bagnicong_de_la_keifuern"
+    SECRET_KEY = "El_Christ_bagnicong_de_la_keifuern"
     TEMPLATE_FOLDER = os.getcwd() + "/app/templates"
     STATIC_FOLDER = os.getcwd() + "/app/static"
     SQL_USERNAME = "syncordian"

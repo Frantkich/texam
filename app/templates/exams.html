@@ -1,25 +1,30 @@
 {% extends "base/base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exams.css') }}">
+{% endblock %}
+
 {% block title %}All Exams{% endblock %}
 
 {% block content %}
-<div class="container">
-    <ul class="list-group">
-        {% for exam in exams %}
-        <li class="list-group-item">
-            {{ exam.name }}
-            <ul>
-                {% for question in exam.questions %}
-                <li>{{ question.description }}</li>
-                <ul>
-                    {% for answer in question.answers %}
-                    <li>{{ answer.score }} - {{ answer.value }}</li>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <ul id="itemList" class="list-group">
+                    {% for exam in exams %}
+                    <a href="{{ exam.name }}"><li class="list-group-item">{{ exam.name }}</li></a>
                     {% endfor %}
                 </ul>
-                {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/exams.js') }}"></script>
 {% endblock %}
