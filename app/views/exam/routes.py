@@ -52,7 +52,7 @@ def fetchNewExam():
         return return_error(500, "Error fetching exams.")
     for exam in exams:
         if not get_exam(exam["code"]):
-            create_exam(exam["name"], exam["code"], exam["description"], exam["class_name"], {"questions": []})
+            create_exam(exam["name"], exam["code"], exam["description"], exam["class_name"])
     return return_data(exams)
 
 

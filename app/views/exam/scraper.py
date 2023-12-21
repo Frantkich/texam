@@ -13,7 +13,8 @@ def new_tlc_session():
         'ta_password': current_user.password,
         'login': "Login"
     }
-    response = session.post(current_app.config["TLCEXAM_URL"] + "/login", data = data)
+    headers = {'User-Agent': 'Your User Agent'}
+    response = session.post(current_app.config["TLCEXAM_URL"] + "/login", data=data, headers=headers)
     
     if response.status_code != 200:
         return None
@@ -56,20 +57,16 @@ def fetch_new_questions(exam_code: str):
             "description": "FOPM enables a bank to express relationships with a client via",
             "answers": [
                 {
-                    "description": "third party",
-                    "score": 7
+                    "description": "third party"
                 },
                 {
-                    "description": "third party with client_f=1",
-                    "score": 0
+                    "description": "third party with client_f=1"
                 },
                 {
-                    "description": "Both",
-                    "score": 0
+                    "description": "Both"
                 },
                 {
-                    "description": "None",
-                    "score": 0
+                    "description": "None"
                 }
             ]
         })

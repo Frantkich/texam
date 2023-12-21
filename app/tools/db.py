@@ -1,10 +1,8 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.types import JSON
-
+from sqlalchemy import Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from typing import List
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -14,62 +12,69 @@ db_c = SQLAlchemy(model_class=Base)
 
 
 class Users(UserMixin, db_c.Model):
-    id: Mapped[int]       = mapped_column(Integer, primary_key=True)
-    email: Mapped[str]    = mapped_column(String(255), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
-    is_admin: Mapped[bool]= mapped_column(db_c.Boolean, default=False)
+    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
+    email: Mapped[str]                   = mapped_column(String(255), nullable=False, unique=True)
+    password: Mapped[str]                = mapped_column(String(255), nullable=False)
+    is_admin: Mapped[bool]               = mapped_column(Boolean,     default=False)
 
 
-class Exams(UserMixin, db_c.Model):
-    id: Mapped[int]         = mapped_column(Integer, primary_key=True)
-    name: Mapped[str]       = mapped_column(String(255), unique=True, nullable=False)
-    code: Mapped[str]       = mapped_column(String(255), unique=True, nullable=False)
-    description: Mapped[str]= mapped_column(String(255), nullable=False)
-    class_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    questions: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
+class Exams(db_c.Model):
+    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
+    name: Mapped[str]                    = mapped_column(String(255), nullable=False, unique=True)
+    code: Mapped[str]                    = mapped_column(String(255), nullable=False, unique=True)
+    description: Mapped[str]             = mapped_column(String(255), nullable=False)
+    class_name: Mapped[str]              = mapped_column(String(255), nullable=False)
+    questions: Mapped[List["Questions"]] = relationship(cascade="all, delete-orphan")
 
-    # FORMAT QUESTIONS
-    # questions = [
-    #     {
-    #         "description": "description",
-    #         "answers": [{
-    #             "description": "description",
-    #             "score": 7
-    #         },...
-    #         }],
-    #     },...
-    # ]
+
+class Questions(db_c.Model):
+    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
+    description: Mapped[str]             = mapped_column(String(255), nullable=False)
+    exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
+    answers: Mapped[List["Answers"]]     = relationship(cascade="all, delete-orphan")
+
+
+class Answers(db_c.Model):
+    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
+    description: Mapped[str]             = mapped_column(String(255), nullable=False)
+    score: Mapped[int]                   = mapped_column(Integer,     nullable=True)
+    remarks: Mapped[str]                 = mapped_column(String(255), nullable=True)
+    
+    question_id: Mapped[int]             = mapped_column(ForeignKey("questions.id"))
 
 
 def get_user(email:str) -> Users:
-   return Users.query.filter_by(email=email).first()
+    return Users.query.filter_by(email=email).first()
 
 def get_exam(code:str) -> Exams:
-   return Exams.query.filter_by(code=code).first()
+    return Exams.query.filter_by(code=code).first()
 
 def get_all_exam() -> Exams:
-   return Exams.query.all()
+    return Exams.query.all()
 
-def create_exam(name:str, code:str, description:str, class_name:str, questions:dict) -> Exams:
-   exam:Exams = Exams(name=name, code=code, description=description, class_name=class_name, questions=questions)
-   db_c.session.add(exam)
-   db_c.session.commit()
-   return exam
+def create_exam(name:str, code:str, description:str, class_name:str) -> Exams:
+    exam:Exams = Exams(name=name, code=code, description=description, class_name=class_name)
+    db_c.session.add(exam)
+    db_c.session.commit()
+    return exam
 
 def update_exam_questions(code:str, questions:dict) -> Exams:
-   exam:Exams = Exams.query.filter_by(code=code).first()
-   if not exam:
-      return None
-   exam.questions = questions
-   db_c.session.commit()
-   return exam
+    exam:Exams = Exams.query.filter_by(code=code).first()
+    if not exam:
+        return None
+    exam.questions = questions
+    db_c.session.commit()
+    return exam
 
 def add_exam_question(code:str, new_questions:dict) -> Exams:
-   exam:Exams = Exams.query.filter_by(code=code).first()
-   for new_question in new_questions:
-      if not [1 for question in exam.questions["questions"] if question["description"] == new_question["description"]]:
-         exam.questions["questions"].append(new_question)
-   print("NEW QUESTIONS")
-   print(exam.questions)
-   db_c.session.commit()
-   return exam
+    exam:Exams = Exams.query.filter_by(code=code).first()
+    for new_question in new_questions:
+        if not [1 for old_question in exam.questions if old_question.description == new_question["description"]]:
+            answers = []
+            for answer in new_question["answers"]:
+                answers.append(Answers(description=answer["description"]))
+            exam.questions.append(Questions(description=new_question["description"], answers=answers))
+            print("NEW QUESTIONS")
+            print(exam.questions)
+    db_c.session.commit()
+    return exam

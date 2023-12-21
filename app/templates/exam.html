@@ -19,7 +19,7 @@
                 <li class="list-group-item">Class: {{ exam.class_name }}</li>
                 <li class="list-group-item">Question count: {{ exam.questions | count }}</li>
             </ul>
-            {% if exam.questions["questions"] | count != 0 %}
+            {% if exam.questions | count != 0 %}
             <ul class="list-group mt-3">
                 <li class="list-group-item">Pass: X times</li>
                 <li class="list-group-item">Sure questions: X</li>
@@ -29,7 +29,7 @@
         </div>
     </div>
     <button class="btn btn-danger" id="fetchNewQuestions">Fetch new questions</button>
-    {% if exam.questions["questions"] | count != 0 %}
+    {% if exam.questions | count != 0 %}
     <div class="mb-3">
         <button class="btn btn-primary">Pass exam</button>
     </div>
