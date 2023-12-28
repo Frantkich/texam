@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Boolean, ForeignKey
+from sqlalchemy import Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing import List
 import pymysql
@@ -38,7 +38,7 @@ class Answers(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
     description: Mapped[str]             = mapped_column(String(255), nullable=False)
     score: Mapped[int]                   = mapped_column(Integer,     nullable=True)
-    remarks: Mapped[str]                 = mapped_column(String(255), nullable=True)
+    remarks: Mapped[str]                 = mapped_column(Text(2042), nullable=True)
     
     question_id: Mapped[int]             = mapped_column(ForeignKey("questions.id"))
 
@@ -62,7 +62,19 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
     exam:Exams = Exams.query.filter_by(code=code).first()
     if not exam:
         return None
-    exam.questions = questions
+    for question in questions:
+        for answer in question["answers"]:
+            answer_db:Answers = Answers.query.filter_by(id=answer["id"]).first()
+            if answer_db:
+                answer_db.remarks = answer["remarks"]
+                if answer["score"].isnumeric():
+                    answer_db.score = int(answer["score"])
+                elif not answer["score"]:
+                    answer_db.score = None
+                else:
+                    return None
+            else:
+                return None
     db_c.session.commit()
     return exam
 

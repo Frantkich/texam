@@ -7,6 +7,7 @@ from app.tools.db import get_exam
 
 
 def new_tlc_session():
+    return None
     session = requests.Session()
     data = {
         'ta_username': current_user.email,

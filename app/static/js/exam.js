@@ -10,11 +10,14 @@ $("#saveAnswers").on("click", () => {
         answers = [];
         $(question).find(".answer").each((index, answer) => {
             answers.push(Object({
+                id: $(answer).find(".answerRemarks").attr("id").split("_")[1],
                 description: $(answer).find(".answerDesc").text().trim(),
-                score: $(answer).find(".answerScore").val()
+                score: $(answer).find(".answerScore").val(),
+                remarks: $(answer).find(".answerRemarks").val()
             }));
         });
         questions.push(Object({
+            id: $(question).find(".answerList").attr("id").split("_")[1],
             description: $(question).find(".questionDesc").text().trim(),
             answers: answers
         }));
@@ -49,6 +52,14 @@ $(".answerScore").on("input", function() {
     if (score < min ) {score = min;}
     if (score > max ) {score = max;} 
     $(this).val(score);
+    if (score == max) {
+        console.log("remarks_" + $(this).attr("answer_id"))
+        let remarks = $("#remarks_" + $(this).attr("answer_id"))
+        if ( remarks.text().trim() == "" ) {
+            alert("Don't forget to add remarks to justify yourself!");
+            remarks.prev().find(".bi-chevron-bar-down").click();
+        }
+    }
 });
 
 
@@ -69,3 +80,17 @@ $("#fetchNewQuestions").on("click", () => {
         });
     }
 });
+
+$(".bi-chevron-bar-down").on("click", function() {
+    $(this).toggleClass("bi-chevron-bar-up");
+    $(this).toggleClass("bi-chevron-bar-down");
+});
+
+function uncollapseRemarks() {
+    $(".answerRemarks").each((index, answerRemarks) => {
+        if ($(answerRemarks).val().trim() != "") {
+            $(answerRemarks).prev().find(".bi-chevron-bar-down").click();
+        }
+    });
+}
+uncollapseRemarks();

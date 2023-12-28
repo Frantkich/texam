@@ -28,33 +28,35 @@
             {% endif %}
         </div>
     </div>
-    <button class="btn btn-danger" id="fetchNewQuestions">Fetch new questions</button>
+    <button class="btn btn-info" id="fetchNewQuestions">Fetch new questions</button>
     {% if exam.questions | count != 0 %}
-    <div class="mb-3">
-        <button class="btn btn-primary">Pass exam</button>
-    </div>
-    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse"
-        aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
+    <button class="btn btn-primary">Pass exam</button>
+    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
     {% endif %}
-        <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
-    <ul id="questions" class="collapse multi-collapse mt-2">
+    <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
+    <ul id="questions" class="collapse multi-collapse mt-2 list-group">
         {% for question in exam.questions %}
-        <li class="question mt-2">
-            <p class="questionDesc">{{ question.description }}</p>
-            <ul>
+        <li class="question mt-2 list-group-item">
+            <div class="d-flex">
+                <i class="bi bi-chevron-bar-down me-2" type="button" data-bs-toggle="collapse" data-bs-target="#answerList_{{question.id}}" aria-expanded="false" aria-controls="answerList_{{question.id}}"></i>
+                <p class="questionDesc m-0">{{ question.description }}</p>
+            </div>
+            <ul id="answerList_{{question.id}}" class="answerList list-group collapse mt-2">
                 {% for answer in question.answers %}
-                <li class="answer">
-                    <div class="card mt-2 ">
-                        <div class="card-body p-1 d-flex align-items-center">
+                <li class="answer list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex">
                             <div>
-                                <input class="answerScore" type="number" min="0" max="10" value="{{ answer.score }}"
+                                <input answer_id="{{answer.id}}" class="answerScore" type="number" min="0" max="10" value="{{ answer.score }}"
                                     class="form-control">
                             </div>
-                            <div class="answerDesc ms-2 d-flex align-items-center">
+                            <div class="answerDesc ms-2">
                                 {{ answer.description }}
                             </div>
                         </div>
+                        <i class="bi bi-chevron-bar-down" type="button" data-bs-toggle="collapse" data-bs-target="#remarks_{{answer.id}}" aria-expanded="false" aria-controls="remarks_{{answer.id}}"></i>
                     </div>
+                    <textarea id="remarks_{{answer.id}}" class="answerRemarks form-control collapse" aria-label="With textarea" maxlength="2042">{{ answer.remarks }}</textarea>
                 </li>
                 {% endfor %}
             </ul>
