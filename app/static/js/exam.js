@@ -46,21 +46,27 @@ $("#saveAnswers").on("click", () => {
  * Ensures that the entered score is within the specified range.
  */
 $(".answerScore").on("input", function() {
-    let score = parseInt($(this).val());
-    let max = parseInt($(this).attr("max"));
-    let min = parseInt($(this).attr("min"));
-    if (score < min ) {score = min;}
-    if (score > max ) {score = max;} 
-    $(this).val(score);
-    if (score == max) {
-        console.log("remarks_" + $(this).attr("answer_id"))
-        let remarks = $("#remarks_" + $(this).attr("answer_id"))
-        if ( remarks.text().trim() == "" ) {
+    if ($(this).val() == 3) {
+        let remarks = $("#remarks_"+$(this).attr("id"))
+        if ( remarks.val() == "" ) {
             alert("Don't forget to add remarks to justify yourself!");
             remarks.prev().find(".bi-chevron-bar-down").click();
         }
     }
 });
+
+
+function selectSelections() {
+    $(".answerScore").each((index, answerScore) => {
+        let score = $(answerScore).attr("value");
+        $(answerScore).find("option").each((index, option) => {
+            if ($(option).val() == score) {
+                $(option).attr("selected", true);
+            }
+        });
+    });
+}
+selectSelections();
 
 
 $("#fetchNewQuestions").on("click", () => {

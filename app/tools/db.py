@@ -10,6 +10,7 @@ class Base(DeclarativeBase):
   pass
 db_c = SQLAlchemy(model_class=Base)
 
+# Models
 
 class Users(UserMixin, db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
@@ -46,11 +47,14 @@ class Answers(db_c.Model):
 def get_user(email:str) -> Users:
     return Users.query.filter_by(email=email).first()
 
+
 def get_exam(code:str) -> Exams:
     return Exams.query.filter_by(code=code).first()
 
+
 def get_all_exams() -> Exams:
     return Exams.query.all()
+
 
 def get_question(id:int = None, search_string:str = None) -> Questions:
     if id:
@@ -60,14 +64,17 @@ def get_question(id:int = None, search_string:str = None) -> Questions:
     else:
         return None
 
+
 def get_all_questions() -> Questions:
     return Questions.query.all()
+
 
 def create_exam(name:str, code:str, description:str, class_name:str) -> Exams:
     exam:Exams = Exams(name=name, code=code, description=description, class_name=class_name)
     db_c.session.add(exam)
     db_c.session.commit()
     return exam
+
 
 def update_exam_questions(code:str, questions:dict) -> Exams:
     exam:Exams = Exams.query.filter_by(code=code).first()
@@ -88,6 +95,7 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
                 return None
     db_c.session.commit()
     return exam
+
 
 def add_exam_question(code:str, new_questions:dict) -> Exams:
     exam:Exams = Exams.query.filter_by(code=code).first()

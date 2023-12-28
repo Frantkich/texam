@@ -22,8 +22,7 @@
             {% if exam.questions | count != 0 %}
             <ul class="list-group mt-3">
                 <li class="list-group-item">Pass: X times</li>
-                <li class="list-group-item">Sure questions: X</li>
-                <li class="list-group-item">Mean questions: X</li>
+                <li class="list-group-item">Failed: X times</li>
             </ul>
             {% endif %}
         </div>
@@ -45,18 +44,22 @@
                 {% for answer in question.answers %}
                 <li class="answer list-group-item">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex">
+                        <div class="d-flex  align-items-center">
                             <div>
-                                <input answer_id="{{answer.id}}" class="answerScore" type="number" min="0" max="10" value="{{ answer.score }}"
-                                    class="form-control">
+                                <select class="answerScore form-select" id="{{answer.id}}" value="{{ answer.score }}">
+                                    <option value="0"></option>
+                                    <option value="1">Maybe</option>
+                                    <option value="2">I think</option>
+                                    <option value="3">Verified</option>
+                                </select>
                             </div>
-                            <div class="answerDesc ms-2">
+                            <div class="answerDesc ms-3">
                                 {{ answer.description }}
                             </div>
                         </div>
                         <i class="bi bi-chevron-bar-down" type="button" data-bs-toggle="collapse" data-bs-target="#remarks_{{answer.id}}" aria-expanded="false" aria-controls="remarks_{{answer.id}}"></i>
                     </div>
-                    <textarea id="remarks_{{answer.id}}" class="answerRemarks form-control collapse" aria-label="With textarea" maxlength="2042">{{ answer.remarks if answer.remarks else "" }}</textarea>
+                    <textarea id="remarks_{{answer.id}}" class="answerRemarks form-control collapse" maxlength="2042">{{ answer.remarks if answer.remarks else "" }}</textarea>
                 </li>
                 {% endfor %}
             </ul>
