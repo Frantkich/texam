@@ -28,7 +28,7 @@ def return_error(error_code: int, msg: str = "") -> Response:
     """
     return Response(json.dumps({"status": "error", "message": msg}), error_code, content_type="application/json")
 
-def return_suceess(msg: str = "") -> Response:
+def return_success(msg: str = "") -> Response:
     """
     Returns a Flask Response object with an success message.
 

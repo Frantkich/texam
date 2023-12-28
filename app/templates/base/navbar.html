@@ -9,7 +9,10 @@
                 <a class="nav-link" href="{{ url_for('frontend.index') }}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('exam.index') }}">Exams</a>
+                <a class="nav-link" href="{{ url_for('exams.index') }}">Exams</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('questions.index') }}">Questions</a>
             </li>
             {% if not current_user.is_authenticated %}
             <li class="nav-item">
@@ -23,14 +26,3 @@
         </ul>
     </div>
 </nav>
-<!-- 
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="{{ url_for('exam.index') }}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Exams</a>
-    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{{ url_for('exam.index') }}">Option 1</a>
-        <a class="dropdown-item" href="{{ url_for('exam.index') }}"></a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{{ url_for('exam.index') }}">Option 3</a>
-    </div>
-</li>
--->

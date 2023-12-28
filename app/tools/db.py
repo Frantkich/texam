@@ -49,8 +49,19 @@ def get_user(email:str) -> Users:
 def get_exam(code:str) -> Exams:
     return Exams.query.filter_by(code=code).first()
 
-def get_all_exam() -> Exams:
+def get_all_exams() -> Exams:
     return Exams.query.all()
+
+def get_question(id:int = None, search_string:str = None) -> Questions:
+    if id:
+        return Questions.query.filter_by(id=id).first()
+    elif search_string:
+        return Questions.query.filter(Questions.description.like(f"%{search_string}%")).all()
+    else:
+        return None
+
+def get_all_questions() -> Questions:
+    return Questions.query.all()
 
 def create_exam(name:str, code:str, description:str, class_name:str) -> Exams:
     exam:Exams = Exams(name=name, code=code, description=description, class_name=class_name)

@@ -27,7 +27,7 @@ $("#saveAnswers").on("click", () => {
         questions: questions
     })
     $.ajax({
-        url: "/exam/answers",
+        url: "answers",
         type: "POST",
         data: JSON.stringify(examData),
         contentType: "application/json; charset=utf-8",
@@ -67,7 +67,7 @@ $("#fetchNewQuestions").on("click", () => {
     let examCode = $("#examCode").text().trim();
     if (window.confirm("Are you sure ?")) {
         $.ajax({
-            url: "/exam/fetchNewQuestions/" + examCode,
+            url: "fetchNewQuestions/" + examCode,
             type: "UPDATE",
             success: (data) => {
                 if (data.status == "success") {

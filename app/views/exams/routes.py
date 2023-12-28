@@ -4,12 +4,12 @@ import json
 
 from app.tools.helpers import (
     return_error,
-    return_suceess,
+    return_success,
     return_data
 )
 from app.tools.db import (
     get_exam,
-    get_all_exam,
+    get_all_exams,
     update_exam_questions,
     create_exam,
     add_exam_question,
@@ -17,13 +17,13 @@ from app.tools.db import (
 from .scraper import fetch_new_exams, fetch_new_questions
 
 
-routes = Blueprint("exam", __name__, url_prefix="/exam")
+routes = Blueprint("exams", __name__, url_prefix="/exams")
 
 
 @routes.route("/")
 @login_required
 def index():
-    return render_template("exams.html", exams=get_all_exam())
+    return render_template("exams.html", exams=get_all_exams())
 
 
 @routes.route("/<exam_code>")
@@ -40,7 +40,7 @@ def exam(exam_code: str):
 def save_answers():
     examData = json.loads(request.data)
     if update_exam_questions(examData["code"], examData["questions"]):
-        return return_suceess("Answers saved.")
+        return return_success("Answers saved.")
     return return_error(500, "Error saving answers.")
 
 
@@ -60,5 +60,5 @@ def fetchNewExam():
 @login_required
 def fetchQuestions(exam_code):
     if add_exam_question(exam_code, fetch_new_questions(exam_code)):
-        return return_suceess("New question fetched saved.")
+        return return_success("New question fetched saved.")
     return return_error(500, "Error saving answers.")

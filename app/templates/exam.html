@@ -56,7 +56,7 @@
                         </div>
                         <i class="bi bi-chevron-bar-down" type="button" data-bs-toggle="collapse" data-bs-target="#remarks_{{answer.id}}" aria-expanded="false" aria-controls="remarks_{{answer.id}}"></i>
                     </div>
-                    <textarea id="remarks_{{answer.id}}" class="answerRemarks form-control collapse" aria-label="With textarea" maxlength="2042">{{ answer.remarks }}</textarea>
+                    <textarea id="remarks_{{answer.id}}" class="answerRemarks form-control collapse" aria-label="With textarea" maxlength="2042">{{ answer.remarks if answer.remarks else "" }}</textarea>
                 </li>
                 {% endfor %}
             </ul>

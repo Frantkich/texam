@@ -31,11 +31,12 @@ def create_app(config_name) -> Flask:
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(401, unauthorized)
     # Routes
-    from app.views import admin, frontend, user, exam
+    from app.views import admin, frontend, user, exams, question
     app.register_blueprint(admin.routes)
     app.register_blueprint(frontend.routes)
     app.register_blueprint(user.routes)
-    app.register_blueprint(exam.routes)
+    app.register_blueprint(exams.routes)
+    app.register_blueprint(question.routes)
     return app
 
 
