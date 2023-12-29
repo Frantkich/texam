@@ -3,7 +3,7 @@ from flask_login import current_user
 import requests
 import bs4
 
-from app.tools.db import get_exam
+from app.tools.db import get_exam, assign_exam_to_user, remove_exam_from_user
 
 
 def new_tlc_session():
@@ -30,9 +30,8 @@ def fetch_new_exams():
     # response = session.get(current_app.config["TLCEXAM_URL"] + "/test_list")
     # soup = bs4.BeautifulSoup(response.content, "html.parser")
     
-    with open("C:\\Users\\Frantkich\\Desktop\\texam\\html.html", "r") as file:
+    with open("C:\\Users\\Frantkich\\Desktop\\texam\\fetch_new_exams.html", "r") as file:
         html_content = file.read()
-    
     soup = bs4.BeautifulSoup(html_content, "html.parser")
 
     exams = []
@@ -76,9 +75,19 @@ def fetch_new_questions(exam_code: str):
     return questions
 
 def pass_exam(exam_code: str):
-    session = new_tlc_session()
-    if not session: return None
+    # session = new_tlc_session()
+    # if not session: return None
 
     # response = session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
 
+    assign_exam_to_user(exam_code)
+    return True
+
+def submit_exam():
+    # session = new_tlc_session()
+    # if not session: return None
+
+    # response = session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
+
+    remove_exam_from_user()
     return True

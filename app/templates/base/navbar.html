@@ -14,6 +14,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('questions.index') }}">Questions</a>
             </li>
+            {% if current_user.exam %}
+            <a class="nav-link" href="{{ url_for('exams.active_exam') }}">Active Exam</a>
+            {% endif %}
             {% if not current_user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('log.login') }}">Connect</a>

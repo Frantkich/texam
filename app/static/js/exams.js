@@ -1,4 +1,4 @@
-// main.js
+"use strict";
 console.log('exams_index.js loaded');
 
 $("#searchInput").val("");

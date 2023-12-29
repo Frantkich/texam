@@ -1,3 +1,4 @@
+"use strict";
 console.log('exam.js loaded');
 
 /**
@@ -5,9 +6,14 @@ console.log('exam.js loaded');
  * Collects the answers from the questions on the page and sends them to the server.
  */
 $("#saveAnswers").on("click", () => {
+    saveAnswers();
+});
+
+// TO UPDATE IN exam_active.js
+function saveAnswers() {
     let questions = [];
     $(".question").each((index, question) => {
-        answers = [];
+        let answers = [];
         $(question).find(".answer").each((index, answer) => {
             answers.push(Object({
                 id: $(answer).find(".answerRemarks").attr("id").split("_")[1],
@@ -39,36 +45,7 @@ $("#saveAnswers").on("click", () => {
         },
         error: (error) => { console.log(error); }
     });
-});
-
-/**
- * Event handler for the input event on the answer score input field.
- * Ensures that the entered score is within the specified range.
- */
-$(".answerScore").on("input", function() {
-    if ($(this).val() == 3) {
-        let remarks = $("#remarks_"+$(this).attr("id"))
-        if ( remarks.val() == "" ) {
-            alert("Don't forget to add remarks to justify yourself!");
-            remarks.prev().find(".bi-chevron-bar-down").click();
-        }
-    }
-});
-
-
-function selectSelections() {
-    $(".answerScore").each((index, answerScore) => {
-        let score = $(answerScore).attr("value");
-        $(answerScore).find("option").each((index, option) => {
-            if ($(option).val() == score) {
-                $(option).attr("selected", true);
-            }
-        });
-    });
 }
-selectSelections();
-
-
 $("#fetchNewQuestions").on("click", () => {
     let examCode = $("#examCode").text().trim();
     if (window.confirm("Are you sure ?")) {
@@ -87,16 +64,20 @@ $("#fetchNewQuestions").on("click", () => {
     }
 });
 
-$(".bi-chevron-bar-down").on("click", function() {
-    $(this).toggleClass("bi-chevron-bar-up");
-    $(this).toggleClass("bi-chevron-bar-down");
+$("#startExam").on("click", () => {
+    let examCode = $("#examCode").text().trim();
+    if (window.confirm("Are you sure ?")) {
+        $.ajax({
+            url: "startExam/" + examCode,
+            type: "POST",
+            success: (data) => {
+                if (data.status == "success") {
+                    location.href = "active";
+                } else {
+                    alert("Error: " + data.message);
+                }
+            },
+            error: (error) => { console.log(error); }
+        });
+    }
 });
-
-function uncollapseRemarks() {
-    $(".answerRemarks").each((index, answerRemarks) => {
-        if ($(answerRemarks).val().trim() != "") {
-            $(answerRemarks).prev().find(".bi-chevron-bar-down").click();
-        }
-    });
-}
-uncollapseRemarks();

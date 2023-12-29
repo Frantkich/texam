@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
 {% endblock %}
 
-{% block title %}{{ exam.name }}{% endblock %}
+{% block title %}Results{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -27,13 +27,6 @@
             {% endif %}
         </div>
     </div>
-    <button class="btn btn-info" id="fetchNewQuestions">Fetch new questions</button>
-    <button class="btn btn-primary"  id="startExam">Start exam</button>
-    {% if exam.questions | count != 0 %}
-    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
-    {% endif %}
-    <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
-    {% include "base/questions_list.html" %}
 </div>
 {% endblock %}
 

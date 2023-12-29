@@ -1,16 +1,12 @@
-// main.js
-console.log('questions_index.js loaded');
+"use strict";
+console.log('exam_active.js loaded');
 
-$(".bi-chevron-bar-down").on("click", function() {
-    $(this).toggleClass("bi-chevron-bar-up");
-    $(this).toggleClass("bi-chevron-bar-down");
-});
-
-function uncollapseRemarks() {
-    $(".answerRemarks").each((index, answerRemarks) => {
-        if ($(answerRemarks).val().trim() != "") {
-            $(answerRemarks).prev().find(".bi-chevron-bar-down").click();
-        }
-    });
+function uncollapseQuestionList() {
+    $("#questions").toggle("collapse multi-collapse");
 }
-uncollapseRemarks();
+uncollapseQuestionList();
+
+function noInputSelected() {
+    $("select").attr("disabled", true);
+}
+noInputSelected();

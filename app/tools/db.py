@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -17,6 +17,8 @@ class Users(UserMixin, db_c.Model):
     email: Mapped[str]                   = mapped_column(String(255), nullable=False, unique=True)
     password: Mapped[str]                = mapped_column(String(255), nullable=False)
     is_admin: Mapped[bool]               = mapped_column(Boolean,     default=False)
+    exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"), nullable=True)
+    exam: Mapped["Exams"]                = relationship()
 
 
 class Exams(db_c.Model):
@@ -26,7 +28,6 @@ class Exams(db_c.Model):
     description: Mapped[str]             = mapped_column(String(255), nullable=False)
     class_name: Mapped[str]              = mapped_column(String(255), nullable=False)
     questions: Mapped[List["Questions"]] = relationship(cascade="all, delete-orphan")
-
 
 class Questions(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
@@ -40,12 +41,25 @@ class Answers(db_c.Model):
     description: Mapped[str]             = mapped_column(String(255), nullable=False)
     score: Mapped[int]                   = mapped_column(Integer,     nullable=True)
     remarks: Mapped[str]                 = mapped_column(Text(2042), nullable=True)
-    
     question_id: Mapped[int]             = mapped_column(ForeignKey("questions.id"))
 
 
 def get_user(email:str) -> Users:
     return Users.query.filter_by(email=email).first()
+
+
+def assign_exam_to_user(exam_code:str):
+    exam:Exams = get_exam(exam_code)
+    if not exam: return False
+    current_user.exam = exam
+    db_c.session.commit()
+    return True
+
+
+def remove_exam_from_user():
+    current_user.exam = None
+    db_c.session.commit()
+    return True
 
 
 def get_exam(code:str) -> Exams:
@@ -105,7 +119,5 @@ def add_exam_question(code:str, new_questions:dict) -> Exams:
             for answer in new_question["answers"]:
                 answers.append(Answers(description=answer["description"]))
             exam.questions.append(Questions(description=new_question["description"], answers=answers))
-            print("NEW QUESTIONS")
-            print(exam.questions)
     db_c.session.commit()
     return exam
