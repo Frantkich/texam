@@ -1,9 +1,5 @@
 {% extends "base/base.html" %}
 
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
-{% endblock %}
-
 {% block title %}{{ exam.name }}{% endblock %}
 
 {% block content %}
@@ -27,7 +23,6 @@
             {% endif %}
         </div>
     </div>
-    <button class="btn btn-info" id="fetchNewQuestions">Fetch new questions</button>
     <button class="btn btn-primary"  id="startExam">Start exam</button>
     {% if exam.questions | count != 0 %}
     <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>

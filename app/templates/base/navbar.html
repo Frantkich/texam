@@ -18,7 +18,7 @@
                         <a class="nav-link" href="{{ url_for('questions.index') }}">Questions</a>
                     </li>
                     {% if current_user.exam %}
-                    <a class="nav-link" href="{{ url_for('exams.active_exam') }}">Active Exam</a>
+                    <a class="nav-link" href="{{ url_for('exams.active_exam') }}"><b>Active Exam</b></a>
                     {% endif %}
                 </div>
                 <div class="d-flex">

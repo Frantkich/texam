@@ -1,9 +1,10 @@
 from flask_login import UserMixin, current_user
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Boolean, ForeignKey, Text
+from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, Text, and_
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing import List
 import pymysql
+from sqlalchemy import and_
 pymysql.install_as_MySQLdb()
 
 class Base(DeclarativeBase):
@@ -11,6 +12,13 @@ class Base(DeclarativeBase):
 db_c = SQLAlchemy(model_class=Base)
 
 # Models
+
+user_question = Table(
+    "user_question",
+    db_c.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("question_id", ForeignKey("questions.id"), primary_key=True)
+)
 
 class Users(UserMixin, db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
@@ -34,7 +42,7 @@ class Questions(db_c.Model):
     description: Mapped[str]             = mapped_column(String(255), nullable=False)
     exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
     answers: Mapped[List["Answers"]]     = relationship(cascade="all, delete-orphan")
-    active_for: Mapped[List["Users"]]    = relationship()
+    active_for: Mapped[List["Users"]]    = relationship(secondary=user_question)
 
 class Answers(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
@@ -57,7 +65,7 @@ def assign_exam_to_user(exam_code:str):
 
 
 def remove_exam_from_user():
-    for question in Questions.query.filter_by(exam_id=current_user.exam_id).filter_by(active_for=current_user.id).all():
+    for question in Questions.query.filter(and_(Questions.exam_id == current_user.exam_id, Questions.active_for.any(id=current_user.id))).all():
         question.active_for.remove(current_user)
     current_user.exam = None
     db_c.session.commit()
@@ -72,7 +80,11 @@ def get_all_exams() -> Exams:
     return Exams.query.all()
 
 
-def get_question(id:int = None, search_string:str = None) -> Questions:
+def get_question_in_exam(exam_id, question_desc:str) -> Questions:
+    return Questions.query.filter(and_(Questions.exam_id == exam_id, Questions.description == question_desc)).first()
+
+
+def search_questions(id:int = None, search_string:str = None) -> Questions:
     if id:
         return Questions.query.filter_by(id=id).first()
     elif search_string:
@@ -113,7 +125,7 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
     return exam
 
 
-def add_exam_question(code:str, new_questions:dict) -> Exams:
+def add_exam_questions(code:str, new_questions:list) -> Exams:
     exam:Exams = Exams.query.filter_by(code=code).first()
     for new_question in new_questions:
         if not [1 for old_question in exam.questions if old_question.description == new_question["description"]]:
@@ -123,3 +135,8 @@ def add_exam_question(code:str, new_questions:dict) -> Exams:
             exam.questions.append(Questions(description=new_question["description"], answers=answers))
     db_c.session.commit()
     return exam
+
+def bind_question_to_user(question:Questions) -> Questions:
+    question.active_for.append(current_user)
+    db_c.session.commit()
+    return question

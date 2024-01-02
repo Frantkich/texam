@@ -9,7 +9,7 @@ $("#saveAnswers").on("click", () => {
     saveAnswers();
 });
 
-// TO UPDATE IN exam_active.js
+// TO UPDATE IN app\static\js\exam_active.js
 function saveAnswers() {
     let questions = [];
     $(".question").each((index, question) => {
@@ -32,7 +32,7 @@ function saveAnswers() {
         code: $("#examCode").text().trim(),
         questions: questions
     })
-    $.ajax({
+    return $.ajax({
         url: "answers",
         type: "POST",
         data: JSON.stringify(examData),
@@ -68,7 +68,7 @@ $("#startExam").on("click", () => {
     let examCode = $("#examCode").text().trim();
     if (window.confirm("Are you sure ?")) {
         $.ajax({
-            url: "startExam/" + examCode,
+            url: "start/" + examCode,
             type: "POST",
             success: (data) => {
                 if (data.status == "success") {

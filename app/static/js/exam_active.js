@@ -3,24 +3,40 @@ console.log('exam_active.js loaded');
 
 
 $("#submit").on("click", () => {
-    if (window.confirm("Your answers will be saved and submit to TLC, do you want to proceed ?")) {
-        saveAnswers();
-        $.ajax({
-            url: "submit",
-            type: "POST",
-            success: (data) => {
-                if (data.status == "success") {
-                    location.reload();
-                } else {
-                    alert("Error: " + data.message);
-                }
-            },
-            error: (error) => { console.log(error); }
+    if (window.confirm("The exam will be submitted, you can't do anything after that, do you want to proceed ?")) {
+        saveAnswers().then(response => {
+            $.ajax({
+                url: "submit",
+                type: "POST",
+                success: (data) => {
+                    if (data.status == "success") {
+                        window.location.href = `active?end=${$("#examCode").text().trim()}`;
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                },
+                error: (error) => { console.log(error); }
+            });
         });
     }
 });
 
-// TO UPDATE IN exam.js
+$("#answer").on("click", () => {
+    if (window.confirm("Your answers will be saved and submit to TLC, do you want to proceed ?")) {
+        saveAnswers().then(response => {
+            $.ajax({
+                url: "submitAnswers",
+                type: "POST",
+                success: (data) => {
+                    console.log(data);
+                },
+                error: (error) => { console.log(error); }
+            });
+        });
+    }
+});
+
+// TO UPDATE IN app\static\js\exam.js
 function saveAnswers() {
     let questions = [];
     $(".question").each((index, question) => {
@@ -44,7 +60,7 @@ function saveAnswers() {
         questions: questions
     })
     console.log(examData)
-    $.ajax({
+    return $.ajax({
         url: "answers",
         type: "POST",
         data: JSON.stringify(examData),

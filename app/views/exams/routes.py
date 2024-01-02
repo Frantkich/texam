@@ -11,8 +11,7 @@ from app.tools.db import (
     get_exam,
     get_all_exams,
     update_exam_questions,
-    create_exam,
-    add_exam_question
+    create_exam
 )
 import app.views.exams.scraper as scraper
 
@@ -55,15 +54,7 @@ def fetch_new_exam():
     return return_data(exams)
 
 
-@routes.route("/fetchNewQuestions/<exam_code>", methods=["UPDATE"])
-@login_required
-def fetchQuestions(exam_code):
-    if add_exam_question(exam_code, scraper.fetch_new_questions(exam_code)):
-        return return_success("New question fetched saved.")
-    return return_error(500, "Error saving answers.")
-
-
-@routes.route("/startExam/<exam_code>", methods=["POST"])
+@routes.route("/start/<exam_code>", methods=["POST"])
 @login_required
 def start_exam(exam_code):
     if not current_user.exam:
@@ -76,18 +67,31 @@ def start_exam(exam_code):
 @routes.route("/active", methods=["GET"])
 @login_required
 def active_exam():
-    if False:
-        return render_template("examResults.html", exam=current_user.exam)
-    if not current_user.exam:
+    if request.args.get('end'):
+        return render_template("examResults.html", exam=request.args.get('end'))
+    elif not current_user.exam:
         return return_error(404, "No exam started.")
-    return render_template("activeExam.html", exam=current_user.exam)
+    exam = type('obj', (object,), {
+        'name' : current_user.exam.name,
+        'code' : current_user.exam.code,
+        'questions' : [question for question in current_user.exam.questions if current_user in question.active_for]
+    })
+    return render_template("activeExam.html", exam=exam)
 
 
-@routes.route("/submit", methods=["GET", "POST"])
+@routes.route("/submitAnswers", methods=["POST"])
+@login_required
+def submit_answers():
+    if not current_user.exam: return return_error(404, "No exam started.")
+    report = scraper.answering_questions()
+    if not report:
+        return return_error(500, "Error answering exam's questions.")
+    return return_success(report)
+
+
+@routes.route("/submit", methods=["POST"])
 @login_required
 def submit_exam():
-    if not current_user.exam:
-        return return_error(404, "No exam started.")
-    if not scraper.submit_exam():
-        return return_error(500, "Error submitting exam.")
+    if not current_user.exam:     return return_error(404, "No exam started.")
+    if not scraper.submit_exam(): return return_error(500, "Error submitting exam.")
     return return_success("Exam submitted.")

@@ -3,7 +3,7 @@ from flask_login import current_user
 from requests import Session
 import bs4
 
-from app.tools.db import get_question, remove_exam_from_user, add_exam_question, assign_exam_to_user
+from app.tools.db import remove_exam_from_user, add_exam_questions, assign_exam_to_user, bind_question_to_user, get_question_in_exam
 
 
 def new_tlc_session() -> Session:
@@ -22,6 +22,7 @@ def new_tlc_session() -> Session:
     session_id = session.cookies.get_dict().get('JSESSIONID')
     print(f"Session ID: {session_id}")
     return session
+
 
 def fetch_new_exams():
     # session = new_tlc_session()
@@ -46,65 +47,57 @@ def fetch_new_exams():
     return exams
 
 
-def fetch_new_questions(exam_code: str):
+def load_questions(exam_code: str):
     # session = new_tlc_session()
     # if not session: return None
-
-    questions = []
-    while True:
-        # response = session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam.code})
-        questions.append({
-            "description": "FOPM enables a bank to express relationships with a client via",
-            "answers": [
-                {
-                    "description": "third party"
-                },
-                {
-                    "description": "third party with client_f=1"
-                },
-                {
-                    "description": "Both"
-                },
-                {
-                    "description": "None"
-                }
-            ]
-        })
-        if True:
-            break
-    return questions
-
-def load_questions(exam_code: str):
-    soup, nb_questions = open_exam(exam_code)
+    # session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
+    # response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
+    with open("C:\\Users\\Frantkich\\Documents\\Syncordis\\texam\\display_question.htm", "r") as file:
+        html_content = file.read()
+    soup = bs4.BeautifulSoup(html_content, "html.parser")
+    # ^^^^ change that 
+    index_start_nb_questions = html_content.find("Question 1 of ")
+    index_end_nb_questions = html_content.find("\n", index_start_nb_questions + 1)
+    nb_questions = int(html_content[index_start_nb_questions + 13:index_end_nb_questions])
+    print(f"Number of questions: '{nb_questions}'")
+    
     assign_exam_to_user(exam_code)
     for _ in range(nb_questions):
-        # ATTENTION IL PEUT Y AVOIR UN \n DANS LA QUESTION
         question_text = soup.find(id="questiontext").text
         print(f"Question: '{question_text}'")
-        question = get_question(search_string=question_text)
+        question = get_question_in_exam(current_user.exam_id, question_text)
         if question:
-            question.active_for.append(current_user)
+            bind_question_to_user(question)
         else:
-            add_exam_question(exam_code, {
+            exam = add_exam_questions(exam_code, [{
                 "description": question_text,
-                "answers": [{"description": tr.find("td").text} for tr in soup.find_all("tr")[1:]]
-            })
+                "answers": [{"description": tr.find_all("td")[-1].text} for tr in soup.find_all("tr")[1:]]
+            }])
+            bind_question_to_user(exam.questions[-1])
         break
+    #   ^^^^^ remove that 
     return True
 
-def submit_exam():
-    soup, nb_questions = open_exam(current_user.exam.code)
+
+def answering_questions() -> str:
+    # session = new_tlc_session()
+    # if not session: return None
+    # response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
+    with open("C:\\Users\\Frantkich\\Documents\\Syncordis\\texam\\display_question.htm", "r") as file:
+        html_content = file.read()
+    soup = bs4.BeautifulSoup(html_content, "html.parser")
+    # ^^^^ change that 
+    index_start_nb_questions = html_content.find("Question 1 of ")
+    index_end_nb_questions = html_content.find("\n", index_start_nb_questions + 1)
+    nb_questions = int(html_content[index_start_nb_questions + 13:index_end_nb_questions])
     for _ in range(nb_questions):
-        # ATTENTION IL PEUT Y AVOIR UN \n DANS LA QUESTION
         question_text = soup.find(id="questiontext").text
-        print(f"Question: '{question_text}'")
-        question = get_question(search_string=question_text)
-        if not question: # LA QUESTION NE S'EST PAS BIEN ENREGISTREE
-            return 500
+        question = get_question_in_exam(current_user.exam_id, question_text)
+        if not question: return 500 # LA QUESTION NE S'EST PAS BIEN ENREGISTREE
         stop = False
         for index, tr in enumerate(soup.find_all("tr")[1:]):
             for answer in question.answers:
-                if answer.description == tr.find("td").text:
+                if answer.description == tr.find_all("td")[-1].text:
                     if answer.score == 2 or answer.score == 3:
                         # response = session.post(current_app.config["TLCEXAM_URL"] + "/display_question", data={
                         #     "cmd": "",
@@ -113,22 +106,42 @@ def submit_exam():
                         # })
                         # soup = bs4.BeautifulSoup(response.content, "html.parser")
                         tr.find("input")['checked'] = True
-                        if answer.score is 3: stop = True
+                        if answer.score == 3: 
+                            stop = True
                     break
             if stop:
                 break
         break
+    #   ^^^^^ remove that
+    return generate_report()
+    
+def generate_report(fresh_start: bool = False) -> str:
+    if fresh_start:
+        session = new_tlc_session()
+        if not session: return None
+    # response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
+    with open("C:\\Users\\Frantkich\\Documents\\Syncordis\\texam\\summary_list.htm", "r") as file:
+        html_content = file.read()
+    soup = bs4.BeautifulSoup(html_content, "html.parser")
+    unanswered = sum([1 for row in soup.find_all('tr')[1:] if row.find_all('td')[3].text != "Answered"])
+    question_count = len(soup.find_all('tr')[1:])
+    answered_ratio = abs(((unanswered * 100) / question_count) - 100)
+    return f"{answered_ratio}% of response answered."
+
+def submit_exam():
+    # session = new_tlc_session()
+    # if not session: return None
     # response = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
     #     "done": "Finished+taking+Test",
     #     "curr_screen": "1",
     #     "skip_buttons": ""
     # })
-    # soup = bs4.BeautifulSoup(response.content, "html.parser")
     with open("C:\\Users\\Frantkich\\Documents\\Syncordis\\texam\\summary_list_END.htm", "r") as file:
         html_content = file.read()
     soup = bs4.BeautifulSoup(html_content, "html.parser")
-    total = soup.find(class_="your-class-name").text.split("</span> ")[1]
-    result = soup.find_all("metainforight")[1].text
+    result = soup.find_all(class_="metainforight")
+    total = result[0].text[13:].split(" ")[0]
+    result = result[1].text
     print(f"Total: '{total}'")
     print(f"Result: '{result}'")
 
@@ -149,22 +162,9 @@ def submit_exam():
     remove_exam_from_user()
     return True
 
-def open_exam(exam_code: str):
-    # session = new_tlc_session()
-    # if not session: return None
 
-    ## Start exam
-    # session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
-        # load_questions
-        # show_features
-        # show_timed
-    # response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
-    with open("C:\\Users\\Frantkich\\Documents\\Syncordis\\texam\\display_question.htm", "r") as file:
-        html_content = file.read()
-    soup = bs4.BeautifulSoup(html_content, "html.parser")
-    # ^^^^ change that 
-    index_start_nb_questions = html_content.find("Question 1 of ")
-    index_end_nb_questions = html_content.find("\n", index_start_nb_questions + 1)
-    nb_questions = int(html_content[index_start_nb_questions + 13:index_end_nb_questions])
-    print(f"Number of questions: '{nb_questions}'")
-    return soup, nb_questions
+def open_exam():
+    # load_questions
+    # show_features
+    # show_timed
+    pass

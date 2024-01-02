@@ -1,9 +1,5 @@
 {% extends "base/base.html" %}
 
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
-{% endblock %}
-
 {% block title %}Active Exam{% endblock %}
 
 {% block content %}
@@ -11,7 +7,8 @@
     <h3 id="examName" class="mb-3">Active Exam - {{ exam.name }}</h3>
     <p id="examCode" hidden>{{ exam.code }}</p>
 
-    <button class="btn btn-warning"  id="submit">Submit exam</button>
+    <button class="btn btn-primary"  id="answer">Answering exam's questions</button>
+    <button class="btn btn-danger"  id="submit">Submit exam</button>
     {% include "base/questions_list.html" %}
 </div>
 {% endblock %}
