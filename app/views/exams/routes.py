@@ -67,7 +67,7 @@ def fetchQuestions(exam_code):
 @login_required
 def start_exam(exam_code):
     if not current_user.exam:
-        if scraper.pass_exam(exam_code):
+        if scraper.load_questions(exam_code):
             return return_success("Exam started")
         return return_error(500, "Error passing exam.")
     return return_error(500, "Exam already started.")

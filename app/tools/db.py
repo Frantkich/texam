@@ -34,7 +34,7 @@ class Questions(db_c.Model):
     description: Mapped[str]             = mapped_column(String(255), nullable=False)
     exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
     answers: Mapped[List["Answers"]]     = relationship(cascade="all, delete-orphan")
-
+    active_for: Mapped[List["Users"]]    = relationship()
 
 class Answers(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
@@ -57,6 +57,8 @@ def assign_exam_to_user(exam_code:str):
 
 
 def remove_exam_from_user():
+    for question in Questions.query.filter_by(exam_id=current_user.exam_id).filter_by(active_for=current_user.id).all():
+        question.active_for.remove(current_user)
     current_user.exam = None
     db_c.session.commit()
     return True
