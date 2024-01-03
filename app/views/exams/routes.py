@@ -53,6 +53,7 @@ def answers_save():
         return return_success("Answers saved.")
     return return_error(500, "Error saving answers.")
 
+
 @routes.route("/answers/submit", methods=["POST"])
 @login_required
 def answers_submit():

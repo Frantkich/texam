@@ -21,10 +21,14 @@ def create_app(config_name) -> Flask:
     db.db_c.init_app(app) 
     
     with app.app_context():
-        db.db_c.create_all()
-        if not db.Users.query.all(): db.db_c.session.add(Users(email='fguern@syncordisconsulting.com', password='Syncordis0609', is_admin=True))
-        db.db_c.session.commit()
-
+        try:
+            # raise Exception("recreate db.")
+            if not db.Users.query.all(): create_admin(db.db_c.session)
+        except Exception as e:
+            db.db_c.create_all()
+            db.db_c.session.commit()
+            print("Database created.")
+            if not db.Users.query.all(): create_admin(db.db_c.session)
     # Register blueprints 
     # Errors
     from app.views.error import page_not_found, unauthorized
@@ -43,3 +47,8 @@ def create_app(config_name) -> Flask:
 @login_manager.user_loader
 def user_loader(id):
     return db.Users.query.filter_by(id=id).first()
+
+def create_admin(session):
+    session.add(Users(email='fguern@syncordisconsulting.com', password='Syncordis0609', is_admin=True))
+    session.commit()
+    print("Admin user created.")

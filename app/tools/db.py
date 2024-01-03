@@ -4,7 +4,8 @@ from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing import List
 import pymysql
-from sqlalchemy import and_
+
+
 pymysql.install_as_MySQLdb()
 
 class Base(DeclarativeBase):
@@ -12,7 +13,6 @@ class Base(DeclarativeBase):
 db_c = SQLAlchemy(model_class=Base)
 
 # Models
-
 user_question = Table(
     "user_question",
     db_c.metadata,
@@ -33,20 +33,20 @@ class Exams(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
     name: Mapped[str]                    = mapped_column(String(255), nullable=False, unique=True)
     code: Mapped[str]                    = mapped_column(String(255), nullable=False, unique=True)
-    description: Mapped[str]             = mapped_column(String(255), nullable=False)
     class_name: Mapped[str]              = mapped_column(String(255), nullable=False)
+    description: Mapped[str]             = mapped_column(String(2042), nullable=False)
     questions: Mapped[List["Questions"]] = relationship(cascade="all, delete-orphan")
 
 class Questions(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
-    description: Mapped[str]             = mapped_column(String(255), nullable=False)
+    description: Mapped[str]             = mapped_column(String(2042), nullable=False)
     exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
     answers: Mapped[List["Answers"]]     = relationship(cascade="all, delete-orphan")
     active_for: Mapped[List["Users"]]    = relationship(secondary=user_question)
 
 class Answers(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
-    description: Mapped[str]             = mapped_column(String(255), nullable=False)
+    description: Mapped[str]             = mapped_column(String(2042), nullable=False)
     score: Mapped[int]                   = mapped_column(Integer,     nullable=True)
     remarks: Mapped[str]                 = mapped_column(Text(2042), nullable=True)
     question_id: Mapped[int]             = mapped_column(ForeignKey("questions.id"))
