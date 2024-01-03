@@ -30,25 +30,25 @@ class Users(UserMixin, db_c.Model):
 
 
 class Exams(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
-    name: Mapped[str]                    = mapped_column(String(255), nullable=False, unique=True)
-    code: Mapped[str]                    = mapped_column(String(255), nullable=False, unique=True)
-    class_name: Mapped[str]              = mapped_column(String(255), nullable=False)
+    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
+    name: Mapped[str]                    = mapped_column(String(255),  nullable=False, unique=True)
+    code: Mapped[str]                    = mapped_column(String(255),  nullable=False, unique=True)
+    class_name: Mapped[str]              = mapped_column(String(255),  nullable=False)
     description: Mapped[str]             = mapped_column(String(2042), nullable=False)
     questions: Mapped[List["Questions"]] = relationship(cascade="all, delete-orphan")
 
 class Questions(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
+    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
     description: Mapped[str]             = mapped_column(String(2042), nullable=False)
     exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
     answers: Mapped[List["Answers"]]     = relationship(cascade="all, delete-orphan")
     active_for: Mapped[List["Users"]]    = relationship(secondary=user_question)
 
 class Answers(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
+    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
     description: Mapped[str]             = mapped_column(String(2042), nullable=False)
-    score: Mapped[int]                   = mapped_column(Integer,     nullable=True)
-    remarks: Mapped[str]                 = mapped_column(Text(2042), nullable=True)
+    score: Mapped[int]                   = mapped_column(Integer,      nullable=True)
+    remarks: Mapped[str]                 = mapped_column(Text(2042),   nullable=True)
     question_id: Mapped[int]             = mapped_column(ForeignKey("questions.id"))
 
 
@@ -131,7 +131,9 @@ def add_exam_questions(code:str, new_questions:list) -> Exams:
         if not [1 for old_question in exam.questions if old_question.description == new_question["description"]]:
             answers = []
             for answer in new_question["answers"]:
-                answers.append(Answers(description=answer["description"]))
+                score = answer["score"] if "score" in answer else None
+                remarks = answer["remarks"] if "remarks" in answer else None
+                answers.append(Answers(description=answer["description"], score=score, remarks=remarks))
             exam.questions.append(Questions(description=new_question["description"], answers=answers))
     db_c.session.commit()
     return exam
