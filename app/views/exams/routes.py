@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request, abort, redirect
 from flask_login import login_required, current_user
 import json
 
@@ -86,7 +86,7 @@ def submit_exam():
 @login_required
 def active_exam():
     if request.args.get('end'):
-        return render_template("examResults.html", exam=request.args.get('end'))
+        return redirect(f"examResults.html?end={request.args.get('end')}")
     elif not current_user.exam:
         return abort(404)
     exam = type('obj', (object,), {

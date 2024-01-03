@@ -129,9 +129,9 @@ def submit_exam():
     for row in soup.find_all('tr')[1:]:
         columns = row.find_all('td')
         detailed_result.append({
-            "Subject": columns[0].text,
-            "NoQuestions": columns[1].text,
-            "Score": columns[2].text
+            "subject": columns[0].text,
+            "noQuestions": columns[1].text,
+            "score": columns[2].text
         })
 
     # EXIT (NECESSAIRE ?)
