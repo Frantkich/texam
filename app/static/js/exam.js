@@ -1,6 +1,8 @@
 "use strict";
 console.log('exam.js loaded');
 
+import { custom_alert } from './script.js';
+
 /**
  * Event handler for the "Save Answers" button click.
  * Collects the answers from the questions on the page and sends them to the server.
@@ -33,36 +35,15 @@ function saveAnswers() {
         questions: questions
     })
     return $.ajax({
-        url: "answers",
-        type: "POST",
+        url: "answers/save",
+        type: "UPDATE",
         data: JSON.stringify(examData),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: (data) => {
-            if (data.status != "success") {
-                alert("Error: " + data.message);
-            }
-        },
-        error: (error) => { console.log(error); }
+        complete: (data) => {custom_alert(data)}
     });
 }
-$("#fetchNewQuestions").on("click", () => {
-    let examCode = $("#examCode").text().trim();
-    if (window.confirm("Are you sure ?")) {
-        $.ajax({
-            url: "fetchNewQuestions/" + examCode,
-            type: "UPDATE",
-            success: (data) => {
-                if (data.status == "success") {
-                    location.reload();
-                } else {
-                    alert("Error: " + data.message);
-                }
-            },
-            error: (error) => { console.log(error); }
-        });
-    }
-});
+
 
 $("#startExam").on("click", () => {
     let examCode = $("#examCode").text().trim();
@@ -73,11 +54,9 @@ $("#startExam").on("click", () => {
             success: (data) => {
                 if (data.status == "success") {
                     location.href = "active";
-                } else {
-                    alert("Error: " + data.message);
                 }
             },
-            error: (error) => { console.log(error); }
+            error: (data) => {custom_alert(data)}
         });
     }
 });

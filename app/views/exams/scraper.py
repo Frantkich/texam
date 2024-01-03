@@ -29,16 +29,15 @@ def fetch_new_exams():
     
     response = session.get(current_app.config["TLCEXAM_URL"] + "/test_list")
     soup = bs4.BeautifulSoup(response.content, "html.parser")
-    soup = bs4.BeautifulSoup(response.content, "html.parser")
 
     exams = []
-    for tr in soup.find_all("tr")[1:]:
-        tds = tr.find_all("td")
+    for row in soup.find_all("tr")[1:]:
+        col = row.find_all("td")
         exams.append({
-            "code": tds[0].find("input")['value'],
-            "name": tds[1].text,
-            "description": tds[2].text,
-            "class_name": tds[3].text
+            "code": col[0].find("input")['value'],
+            "name": col[1].text,
+            "description": col[2].text,
+            "class_name": col[3].text
         })
     return exams
 
@@ -108,7 +107,7 @@ def generate_report(fresh_start: bool = False) -> str:
     unanswered = sum([1 for row in soup.find_all('tr')[1:] if row.find_all('td')[3].text != "Answered"])
     question_count = len(soup.find_all('tr')[1:])
     answered_ratio = abs(((unanswered * 100) / question_count) - 100)
-    return f"{answered_ratio}% of response answered."
+    return f"{answered_ratio}% of exam's responses answered."
 
 
 def submit_exam():

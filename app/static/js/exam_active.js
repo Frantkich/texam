@@ -1,6 +1,7 @@
 "use strict";
 console.log('exam_active.js loaded');
 
+import { custom_alert } from './script.js';
 
 $("#submit").on("click", () => {
     if (window.confirm("The exam will be submitted, you can't do anything after that, do you want to proceed ?")) {
@@ -9,13 +10,9 @@ $("#submit").on("click", () => {
                 url: "submit",
                 type: "POST",
                 success: (data) => {
-                    if (data.status == "success") {
-                        window.location.href = `active?end=${$("#examCode").text().trim()}`;
-                    } else {
-                        alert("Error: " + data.message);
-                    }
+                    if (data.status == "success") { window.location.href = `active?end=${$("#examCode").text().trim()}`;}
                 },
-                error: (error) => { console.log(error); }
+                complete: (data) => {custom_alert(data)}
             });
         });
     }
@@ -25,12 +22,9 @@ $("#answer").on("click", () => {
     if (window.confirm("Your answers will be saved and submit to TLC, do you want to proceed ?")) {
         saveAnswers().then(response => {
             $.ajax({
-                url: "submitAnswers",
+                url: "answers/submit",
                 type: "POST",
-                success: (data) => {
-                    console.log(data);
-                },
-                error: (error) => { console.log(error); }
+                complete: (data) => {custom_alert(data, 10000)}
             });
         });
     }
@@ -59,19 +53,13 @@ function saveAnswers() {
         code: $("#examCode").text().trim(),
         questions: questions
     })
-    console.log(examData)
     return $.ajax({
-        url: "answers",
-        type: "POST",
+        url: "answers/save",
+        type: "UPDATE",
         data: JSON.stringify(examData),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: (data) => {
-            if (data.status != "success") {
-                alert("Error: " + data.message);
-            }
-        },
-        error: (error) => { console.log(error); }
+        complete: (data) => {custom_alert(data)}
     });
 }
 

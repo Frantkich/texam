@@ -11,13 +11,12 @@ $("#searchInput").on("input", function() {
     }).hide();
 });
 
-$("#fetchNewExam").on("click", function() { 
+$("#fetch").on("click", function() { 
     if (confirm("Are you sure?")) {
         $.ajax({
-            url: "/exam/fetchNewExam",
+            url: "fetch",
             type: "UPDATE",
             success: (data) => {
-                console.log(data);
                 if (data.length) {
                     data.forEach((exam) => {
                         $("#itemList").append(`<a href="${ exam.code }"><li class="list-group-item">${ exam.name }</li></a>`);
@@ -26,7 +25,7 @@ $("#fetchNewExam").on("click", function() {
                     alert("Error: " + data.message);
                 }
             },
-            error: (error) => { console.log(error); }
+            complete: (data) => {console.log(data)}
         });
     }
 });

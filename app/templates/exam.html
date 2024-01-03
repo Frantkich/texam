@@ -23,16 +23,19 @@
             {% endif %}
         </div>
     </div>
-    <button class="btn btn-primary"  id="startExam">Start exam</button>
-    {% if exam.questions | count != 0 %}
-    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
-    {% endif %}
-    <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save question answer</button>
+    <div class="d-ruby">
+        <button class="btn btn-primary"  id="startExam">Start exam</button>
+        {% if exam.questions | count != 0 %}
+        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
+        {% endif %}
+        <button class="btn btn-danger collapse multi-collapse" id="saveAnswers">Save questions's answers</button>
+        <div id="liveAlert"></div>
+    </div>
     {% include "base/questions_list.html" %}
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/exam_questions.js') }}"></script>
-<script src="{{ url_for('static', filename='js/exam.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/exam.js') }}"></script>
 {% endblock %}

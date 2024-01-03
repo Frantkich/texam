@@ -1,1 +1,16 @@
 /* main.css */
+
+.d-ruby{
+    display: block ruby;
+}
+
+#liveAlert {
+    align-items: top;
+    display: block ruby;
+}
+
+#liveAlert > .alert{
+    width: fit-content;
+    padding: 6px;
+    margin-bottom: 0px;
+}
