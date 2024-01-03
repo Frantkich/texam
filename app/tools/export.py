@@ -35,7 +35,7 @@ def export_questions():
                     answer = {"description": answer_value}
                     if otherResponses and answer_value == otherResponses: answer["score"] = 2
                     if correctResponse and answer_value == correctResponse: answer["score"] = 3
-                    if "score" in answer and remarks and answer["score"] > 1: answer["remarks"] = remarks
+                    if "score" in answer and answer["score"] > 1: answer["remarks"] = remarks
                     answers.append(answer)
                 questions.append({
                     "description": question["question"],

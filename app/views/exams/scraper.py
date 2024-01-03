@@ -134,8 +134,7 @@ def submit_exam():
             "Score": columns[2].text
         })
 
-    print(detailed_result)
     # EXIT (NECESSAIRE ?)
     # session.get(current_app.config["TLCEXAM_URL"] + "/summary_list?exit_page=1")
     remove_exam_from_user()
-    return True
+    return detailed_result

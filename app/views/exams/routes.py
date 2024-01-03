@@ -77,8 +77,9 @@ def start_exam(exam_code):
 @login_required
 def submit_exam():
     if not current_user.exam:     return return_error(404, "No exam started.")
-    if not scraper.submit_exam(): return return_error(500, "Error submitting exam.")
-    return return_success("Exam submitted.")
+    report = scraper.submit_exam()
+    if not report: return return_error(500, "Error submitting exam.")
+    return return_data(report)
 
 
 @routes.route("/active", methods=["GET"])
