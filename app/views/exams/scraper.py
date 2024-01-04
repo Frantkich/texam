@@ -1,9 +1,10 @@
 from flask import current_app
 from flask_login import current_user
-from requests import Session
+from requests import Session, Response
 import bs4
 
 from app.tools.db import remove_exam_from_user, add_exam_questions, assign_exam_to_user, bind_question_to_user, get_question_in_exam
+
 
 
 def new_tlc_session() -> Session:
@@ -43,14 +44,12 @@ def fetch_new_exams():
 
 
 def load_questions(exam_code: str):
-    session = new_tlc_session()
-    if not session: return None
-    session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
-    response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
-    soup = bs4.BeautifulSoup(response.content, "html.parser")
-    index_start_nb_questions = response.content.find("Question 1 of ")
-    index_end_nb_questions = response.content.find("\n", index_start_nb_questions + 1)
-    nb_questions = int(response.content[index_start_nb_questions + 13:index_end_nb_questions])
+    session, resp = open_exam(exam_code)
+    html:str = resp.content
+    soup = bs4.BeautifulSoup(html, "html.parser")
+    index_start_nb_questions = html.find(b"Question 1 of ")
+    index_end_nb_questions = html.find(b"\n", index_start_nb_questions + 1)
+    nb_questions = int(html[index_start_nb_questions + 13:index_end_nb_questions])
     print(f"Number of questions: '{nb_questions}'")
     assign_exam_to_user(exam_code)
     for _ in range(nb_questions):
@@ -65,44 +64,44 @@ def load_questions(exam_code: str):
                 "answers": [{"description": tr.find_all("td")[-1].text} for tr in soup.find_all("tr")[1:]]
             }])
             bind_question_to_user(exam.questions[-1])
+        response = session.post(current_app.config["TLCEXAM_URL"] + "/display_question", data={"cmd": "", "next_ques": "Next>"})
+        soup = bs4.BeautifulSoup(response.content, "html.parser")
     return True
 
 
 def answering_questions() -> str:
-    session = new_tlc_session()
-    if not session: return None
-    response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
-    soup = bs4.BeautifulSoup(response.content, "html.parser")
-    index_start_nb_questions = response.content.find("Question 1 of ")
-    index_end_nb_questions = response.content.find("\n", index_start_nb_questions + 1)
-    nb_questions = int(response.content[index_start_nb_questions + 13:index_end_nb_questions])
+    session, resp = open_exam(current_user.exam.code)
+    html:str = resp.content
+    soup = bs4.BeautifulSoup(html, "html.parser")
+    index_start_nb_questions = html.find(b"Question 1 of ")
+    index_end_nb_questions = html.find(b"\n", index_start_nb_questions + 1)
+    nb_questions = int(html[index_start_nb_questions + 13:index_end_nb_questions])
     for _ in range(nb_questions):
         question_text = soup.find(id="questiontext").text
         question = get_question_in_exam(current_user.exam_id, question_text)
         if not question: return 500 # LA QUESTION NE S'EST PAS BIEN ENREGISTREE
-        stop = False
-        for index, tr in enumerate(soup.find_all("tr")[1:]):
+        go_to_next_question = False
+        taker_ans = None
+        data = {"cmd": "", "next_ques": "Next>"}
+        for index, tr in enumerate(soup.find_all("tr")[1:]): # ON PARCOURT LES REPONSES
+            answer_desc = tr.find_all("td")[-1].text
             for answer in question.answers:
-                if answer.description == tr.find_all("td")[-1].text:
+                if answer.description == answer_desc:
                     if answer.score == 2 or answer.score == 3:
-                        response = session.post(current_app.config["TLCEXAM_URL"] + "/display_question", data={
-                            "cmd": "",
-                            "next_ques": "Next>",
-                            "taker_ans": index
-                        })
-                        soup = bs4.BeautifulSoup(response.content, "html.parser")
+                        taker_ans = index + 1
                         tr.find("input")['checked'] = True
-                        if answer.score == 3: stop = True
-                    break
-            if stop: break
-    return generate_report()
+                        if answer.score == 3: go_to_next_question = True
+            if taker_ans != None:
+                data["taker_ans"] = taker_ans
+            if go_to_next_question: break
+        # ON ENVOIE LA REPONSE
+        response = session.post(current_app.config["TLCEXAM_URL"] + "/display_question", data=data)
+        soup = bs4.BeautifulSoup(response.content, "html.parser")
+    return generate_report(session)
 
 
-def generate_report(fresh_start: bool = False) -> str:
-    if fresh_start:
-        session = new_tlc_session()
-        if not session: return None
-    response = session.get(current_app.config["TLCEXAM_URL"] + "/display_question")
+def generate_report(session:Session = None, fresh_start: bool = False) -> str:
+    response = session.get(current_app.config["TLCEXAM_URL"] + "/summary_list")
     soup = bs4.BeautifulSoup(response.content, "html.parser")
     unanswered = sum([1 for row in soup.find_all('tr')[1:] if row.find_all('td')[3].text != "Answered"])
     question_count = len(soup.find_all('tr')[1:])
@@ -111,20 +110,18 @@ def generate_report(fresh_start: bool = False) -> str:
 
 
 def submit_exam():
-    session = new_tlc_session()
-    if not session: return None
-    response = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
+    session, resp = open_exam(current_user.exam.code)
+    resp = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
         "done": "Finished+taking+Test",
         "curr_screen": "1",
         "skip_buttons": ""
     })
-    soup = bs4.BeautifulSoup(response.content, "html.parser")
-    result = soup.find_all(class_="metainforight")
-    total = result[0].text[13:].split(" ")[0]
-    result = result[1].text
-    print(f"Total: '{total}'")
-    print(f"Result: '{result}'")
-
+    soup = bs4.BeautifulSoup(resp.content, "html.parser")
+    infos = soup.find_all(class_="metainforight")
+    report = {
+        "total": infos[0].text[13:].split(" ")[0],
+        "result": infos[1].text
+    }
     detailed_result = []
     for row in soup.find_all('tr')[1:]:
         columns = row.find_all('td')
@@ -133,8 +130,23 @@ def submit_exam():
             "noQuestions": columns[1].text,
             "score": columns[2].text
         })
-
-    # EXIT (NECESSAIRE ?)
+    report["details"] = detailed_result
     # session.get(current_app.config["TLCEXAM_URL"] + "/summary_list?exit_page=1")
     remove_exam_from_user()
     return detailed_result
+
+
+def open_exam(exam_code:str) -> Session:
+    session = new_tlc_session()
+    if not session: return None
+    session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
+    session.get(current_app.config["TLCEXAM_URL"] + "/load_questions")
+    session.get(current_app.config["TLCEXAM_URL"] + "/show_timed")
+    session.get(current_app.config["TLCEXAM_URL"] + "/begin_test_message")
+    resp = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
+        "go": "Go+back+to+selected+question",
+        "go_q": "1",
+        "curr_screen": "1",
+        "skip_buttons": ""
+    })
+    return session, resp

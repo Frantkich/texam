@@ -113,12 +113,13 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
             answer_db:Answers = Answers.query.filter_by(id=answer["id"]).first()
             if answer_db:
                 answer_db.remarks = answer["remarks"]
-                if answer["score"].isnumeric():
-                    answer_db.score = int(answer["score"])
-                elif not answer["score"]:
-                    answer_db.score = None
-                else:
-                    return None
+                if "score" in answer:
+                    if not answer["score"]:
+                        answer_db.score = None
+                    elif answer["score"].isnumeric():
+                        answer_db.score = int(answer["score"])
+                    else:
+                        answer_db.score = None
             else:
                 return None
     db_c.session.commit()
