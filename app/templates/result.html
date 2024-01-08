@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+{% endblock %}
+
+{% block title %}You Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="title d-flex">
+        <h1>Result - {{ result.exam.name }}</h1>
+        <div class="result ms-3">
+        {% if result.success %}
+            <span class="result_success">Success - {{ result.percent }}</span>
+        {% else %}
+            <span class="result_fail">Fail - {{ result.percent }}</span>
+        {% endif %}
+        </div>
+    </div>
+    <h6 class="date">{{ result.date }}</h6>
+    <h3 class="mt-5">General Results</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Subject</th>
+                <th scope="col">No Questions</th>
+                <th scope="col">Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in result.detail_score %}
+                <tr>
+                    <td>{{ row.subject }}</td>
+                    <td>{{ row.noQuestions }}</td>
+                    <td>{{ row.score }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3 class="mt-5">Submitted answers</h3>
+    <ul class="list-group">
+        {% for question in result.submitted_questions %}
+            {% if "answer" in question %}
+                {% set answer = question.answer %}
+                {% set question = question.question %}
+                <li class="question mt-2 list-group-item">
+                    <p class="questionDesc m-0">{{ question.description }}</p>
+                    <div class="ms-3">
+                        <span>
+                        {% if answer.score == 1 %}   Maybe
+                        {% elif answer.score == 2 %} I think
+                        {% elif answer.score == 3 %} Verified
+                        {% endif %}
+                        - </span>
+                        <span><b>{{ answer.description }}</b></span>
+                    </div>
+                    {% if answer.remarks %}
+                        <div class="remarks ms-3">
+                            <span>{{ answer.remarks }}</span>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}

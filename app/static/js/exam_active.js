@@ -10,7 +10,7 @@ $("#submit").on("click", () => {
                 url: "submit",
                 type: "POST",
                 success: (data) => {
-                    if (data.status == "success") { window.location.href = `active?end=${$("#examCode").text().trim()}`;}
+                    window.location.href = `/results/${data.result_id}`;
                 },
                 complete: (data) => {custom_alert(data)}
             });

@@ -1,11 +1,9 @@
 from flask import Flask
 from flask_login import LoginManager
-import json
-
 
 from app.tools.config import configs
 import app.tools.db as db
-from app.tools.db import Users, Exams
+from app.tools.db import Users
 
 
 login_manager = LoginManager()
@@ -25,6 +23,7 @@ def create_app(config_name) -> Flask:
             # raise Exception("recreate db.")
             if not db.Users.query.all(): create_admin(db.db_c.session)
         except Exception as e:
+            print(e)
             db.db_c.create_all()
             db.db_c.session.commit()
             print("Database created.")
@@ -35,12 +34,13 @@ def create_app(config_name) -> Flask:
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(401, unauthorized)
     # Routes
-    from app.views import admin, frontend, user, exams, questions
+    from app.views import admin, frontend, user, exams, questions, results
     app.register_blueprint(admin.routes)
     app.register_blueprint(frontend.routes)
     app.register_blueprint(user.routes)
     app.register_blueprint(exams.routes)
     app.register_blueprint(questions.routes)
+    app.register_blueprint(results.routes)
     return app
 
 
