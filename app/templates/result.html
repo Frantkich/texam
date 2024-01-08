@@ -12,9 +12,9 @@
         <h1>Result - {{ result.exam.name }}</h1>
         <div class="result ms-3">
         {% if result.success %}
-            <span class="result_success">Success - {{ result.percent }}</span>
+            <span class="result_success">Success - {{ result.score }}</span>
         {% else %}
-            <span class="result_fail">Fail - {{ result.percent }}</span>
+            <span class="result_fail">Fail - {{ result.score }}</span>
         {% endif %}
         </div>
     </div>

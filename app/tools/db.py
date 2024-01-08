@@ -59,7 +59,7 @@ class Results(db_c.Model):
     id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
     date: Mapped[datetime]               = mapped_column(DateTime,     nullable=False)
     success: Mapped[bool]                = mapped_column(Boolean,      nullable=True)
-    percent: Mapped[int]                 = mapped_column(Integer,      nullable=True)
+    score: Mapped[str]                   = mapped_column(String(255),  nullable=True)
     detail_score: Mapped[dict]           = mapped_column(PickleType,   nullable=True)
     submitted_questions: Mapped[dict]    = mapped_column(PickleType,   nullable=True)
     ended: Mapped[bool]                  = mapped_column(Boolean,      default=False)
@@ -171,10 +171,10 @@ def create_result() -> Results:
     return result
 
 
-def update_result_stats(result:Results, success:bool, percent:int, detail_score:dict, ended:bool=False) -> Results:
+def update_result_stats(result:Results, success:bool, score:str, detail_score:dict, ended:bool=False) -> Results:
     result.detail_score = json.dumps(detail_score)
     result.success = success
-    result.percent = percent
+    result.score = score
     result.ended = ended
     db_c.session.commit()
     return result

@@ -1,4 +1,4 @@
-1. loader
+1. 
 
 2. handle time (keep session)
 

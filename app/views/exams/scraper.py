@@ -1,6 +1,6 @@
 from flask import current_app
 from flask_login import current_user
-from requests import Session, Response
+from requests import Session
 import bs4
 
 from app.tools.db import (
@@ -142,19 +142,19 @@ def submit_exam():
     })
     soup = bs4.BeautifulSoup(resp.content, "html.parser")
     infos = soup.find_all(class_="metainforight")
-    percent = infos[0].text[13:].split(" ")[0],
+    score = infos[0].text[13:].split(" ")[0],
     success = 1 if infos[1].text == "Success" else 0
-    detailed_result = []
+    detail_score = []
     for row in soup.find_all('tr')[1:]:
         columns = row.find_all('td')
-        detailed_result.append({
+        detail_score.append({
             "subject": columns[0].text,
             "noQuestions": columns[1].text,
             "score": columns[2].text
         })
     session.get(current_app.config["TLCEXAM_URL"] + "/summary_list?exit_page=1")
-    result = update_result_stats(get_last_result(), success, percent, detailed_result, ended=True)
-    # remove_exam_from_user()
+    result = update_result_stats(get_last_result(), success, score, detail_score, ended=True)
+    remove_exam_from_user()
     return result
 
 
