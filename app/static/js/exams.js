@@ -13,6 +13,8 @@ $("#searchInput").on("input", function() {
 
 $("#fetch").on("click", function() { 
     if (confirm("Are you sure?")) {
+        $(this).prop("disabled", true);
+        $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);
         $.ajax({
             url: "fetch",
             type: "UPDATE",
@@ -25,7 +27,11 @@ $("#fetch").on("click", function() {
                     alert("Error: " + data.message);
                 }
             },
-            complete: (data) => {console.log(data)}
+            complete: (data) => {
+                console.log(data)
+                $(this).prop("disabled", false);
+                $(this).find(".spinner").remove();
+            }
         });
     }
 });

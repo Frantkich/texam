@@ -8,8 +8,8 @@
     <p id="examCode" hidden>{{ exam.code }}</p>
 
     <div class="d-ruby">
-        <button class="btn btn-primary"  id="answer">Answering exam's questions</button>
-        <button class="btn btn-danger"  id="submit">Submit exam</button>
+        <button id="answer" class="btn btn-primary btn-spinner" type="button"><span role="status">Answering exam's questions</span></button>
+        <button id="submit" class="btn btn-danger btn-spinner" type="button"><span role="status">Submit exam</span></button>
         <div id="liveAlert"></div>
     </div>
     {% include "base/questions_list.html" %}

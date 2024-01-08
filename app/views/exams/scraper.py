@@ -134,42 +134,25 @@ def generate_report(session:Session = None, fresh_start: bool = False) -> str:
 
 
 def submit_exam():
-    # session, resp = open_exam(current_user.exam.code)
-    # resp = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
-    #     "done": "Finished+taking+Test",
-    #     "curr_screen": "1",
-    #     "skip_buttons": ""
-    # })
-    # soup = bs4.BeautifulSoup(resp.content, "html.parser")
-    # infos = soup.find_all(class_="metainforight")
-    # percent = infos[0].text[13:].split(" ")[0],
-    # success = 1 if infos[1].text == "Success" else 0
+    session, resp = open_exam(current_user.exam.code)
+    resp = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
+        "done": "Finished+taking+Test",
+        "curr_screen": "1",
+        "skip_buttons": ""
+    })
+    soup = bs4.BeautifulSoup(resp.content, "html.parser")
+    infos = soup.find_all(class_="metainforight")
+    percent = infos[0].text[13:].split(" ")[0],
+    success = 1 if infos[1].text == "Success" else 0
     detailed_result = []
-    # for row in soup.find_all('tr')[1:]:
-    #     columns = row.find_all('td')
-    #     detailed_result.append({
-    #         "subject": columns[0].text,
-    #         "noQuestions": columns[1].text,
-    #         "score": columns[2].text
-    #     })
-    # session.get(current_app.config["TLCEXAM_URL"] + "/summary_list?exit_page=1")
-    success = 1
-    percent = 100
-    detailed_result = [
-        {
-            "subject": "test",
-            "noQuestions": "1",
-            "score": "2"
-        }, {
-            "subject": "123123123123123",
-            "noQuestions": "13",
-            "score": "232"
-        }, {
-            "subject": "asdasdw",
-            "noQuestions": "144",
-            "score": "23"
-        }
-    ]
+    for row in soup.find_all('tr')[1:]:
+        columns = row.find_all('td')
+        detailed_result.append({
+            "subject": columns[0].text,
+            "noQuestions": columns[1].text,
+            "score": columns[2].text
+        })
+    session.get(current_app.config["TLCEXAM_URL"] + "/summary_list?exit_page=1")
     result = update_result_stats(get_last_result(), success, percent, detailed_result, ended=True)
     # remove_exam_from_user()
     return result
