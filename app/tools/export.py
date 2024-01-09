@@ -1,7 +1,8 @@
 
 import os
 import json
-from app.tools.db import add_exam_questions, Exams
+from app.tools.db.methods import add_exam_questions
+from app.tools.db.models import Exams
 
 FOLDER_PATH = 'app/tools/exports'
 

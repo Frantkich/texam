@@ -3,5 +3,3 @@
 7. support multiple version of each exam (r21 r22 r23)
 
 8. handle de synchronization of submitted questions/answers
-
-9. etre scred pour temenos 

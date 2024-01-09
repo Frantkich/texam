@@ -4,7 +4,7 @@ from requests import Session
 import bs4
 import multiprocessing
 
-from app.tools.db import (
+from app.tools.db.methods import (
     remove_exam_from_user, 
     add_exam_questions, 
     assign_exam_to_user, 

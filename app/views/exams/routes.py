@@ -7,7 +7,7 @@ from app.tools.helpers import (
     return_success,
     return_data
 )
-from app.tools.db import (
+from app.tools.db.methods import (
     get_exams,
     get_exams,
     update_exam_questions,

@@ -1,72 +1,10 @@
-from flask_login import UserMixin, current_user
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, Text, and_, DateTime, PickleType
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from typing import List
+from flask_login import current_user
+from sqlalchemy import and_
 from datetime import datetime
-import pymysql, json
-
-pymysql.install_as_MySQLdb()
+import json
 
 
-class Base(DeclarativeBase):
-  pass
-db_c = SQLAlchemy(model_class=Base)
-
-# Models
-user_question = Table(
-    "user_question",
-    db_c.metadata,
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("question_id", ForeignKey("questions.id"), primary_key=True)
-)
-
-class Users(UserMixin, db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,     primary_key=True)
-    email: Mapped[str]                   = mapped_column(String(255), nullable=False, unique=True)
-    password: Mapped[str]                = mapped_column(String(255), nullable=False)
-    is_admin: Mapped[bool]               = mapped_column(Boolean,     default=False)
-    exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"), nullable=True)
-    exam: Mapped["Exams"]                = relationship()
-
-
-class Exams(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
-    name: Mapped[str]                    = mapped_column(String(255),  nullable=False, unique=True)
-    code: Mapped[str]                    = mapped_column(String(255),  nullable=False, unique=True)
-    class_name: Mapped[str]              = mapped_column(String(255),  nullable=False)
-    description: Mapped[str]             = mapped_column(String(2042), nullable=False)
-    questions: Mapped[List["Questions"]] = relationship(cascade="all, delete-orphan")
-
-
-class Questions(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
-    description: Mapped[str]             = mapped_column(String(2042), nullable=False)
-    exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
-    answers: Mapped[List["Answers"]]     = relationship(cascade="all, delete-orphan")
-    active_for: Mapped[List["Users"]]    = relationship(secondary=user_question)
-
-
-class Answers(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
-    description: Mapped[str]             = mapped_column(String(2042), nullable=False)
-    score: Mapped[int]                   = mapped_column(Integer,      nullable=True)
-    remarks: Mapped[str]                 = mapped_column(Text(2042),   nullable=True)
-    question_id: Mapped[int]             = mapped_column(ForeignKey("questions.id"))
-
-
-class Results(db_c.Model):
-    id: Mapped[int]                      = mapped_column(Integer,      primary_key=True)
-    date: Mapped[datetime]               = mapped_column(DateTime,     nullable=False)
-    success: Mapped[bool]                = mapped_column(Boolean,      nullable=True)
-    score: Mapped[str]                   = mapped_column(String(255),  nullable=True)
-    detail_score: Mapped[dict]           = mapped_column(PickleType,   nullable=True)
-    submitted_questions: Mapped[dict]    = mapped_column(PickleType,   nullable=True)
-    ended: Mapped[bool]                  = mapped_column(Boolean,      default=False)
-    user_id: Mapped[int]                 = mapped_column(ForeignKey("users.id"))
-    exam_id: Mapped[int]                 = mapped_column(ForeignKey("exams.id"))
-    exam: Mapped["Exams"]                = relationship()
-    user: Mapped["Users"]                = relationship()
+from app.tools.db.models import * 
 
 
 # Users

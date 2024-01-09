@@ -2,9 +2,8 @@ from flask import Blueprint, render_template
 from flask_login import login_required
 import json
 
-from app.tools.db import (
-    get_user_results
-)
+from app.tools.db.methods import get_user_results
+
 
 routes = Blueprint("results", __name__, url_prefix="/results")
 

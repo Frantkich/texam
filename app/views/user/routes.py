@@ -2,7 +2,7 @@ from flask import Blueprint, request, redirect, url_for, render_template, curren
 from flask_login import login_user, logout_user
 
 
-import app.tools.db as db
+from app.tools.db.methods import get_user
 
 
 routes = Blueprint("log", __name__)
@@ -13,7 +13,7 @@ def login():
     if request.method == "GET": return render_template("login.html")
     if request.form["secret"] == "wubbalubbadubdub": return render_template("wubbalubbadubdub.html")
     if request.form["secret"] != current_app.config["SECRET"] : return render_template("theonlyhtmlfile.html")
-    user = db.get_user(request.form["email"])
+    user = get_user(request.form["email"])
     if user and request.form["password"] == user.password:
         login_user(user)
         return redirect(url_for("frontend.index"))

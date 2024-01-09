@@ -1,9 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required
 
-from app.tools.db import (
-    search_questions,
-)
+from app.tools.db.methods import search_questions
 
 
 routes = Blueprint("questions", __name__, url_prefix="/questions")
