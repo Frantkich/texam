@@ -1,5 +1,9 @@
 {% extends "base/base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/examActive.css') }}">
+{% endblock %}
+
 {% block title %}Active Exam{% endblock %}
 
 {% block content %}
@@ -7,9 +11,23 @@
     <h3 id="examName" class="mb-3">Active Exam - {{ exam.name }}</h3>
     <p id="examCode" hidden>{{ exam.code }}</p>
 
-    <div class="d-ruby">
+    <div class="buttonRow">
         <button id="answer" class="btn btn-primary btn-spinner" type="button"><span role="status">Answering exam's questions</span></button>
-        <button id="submit" class="btn btn-danger btn-spinner" type="button"><span role="status">Submit exam</span></button>
+        <div class="btn-group" role="group">
+            <button id="submit" type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"><span role="status">Submit exam</span></button>
+            <ul class="dropdown-menu">
+                <li class="mb-2">
+                    <button id="submit_now" class="btn btn-danger" type="button">Submit now</button>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <button id="submit_delay" class="btn btn-danger" type="button">Submit when</button>
+                        <input id="submit_delay_count" type="number" class="form-control" size="4" max="20">
+                        <div class="input-group-text">min remaining</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
         <div id="liveAlert"></div>
     </div>
     {% include "base/questions_list.html" %}

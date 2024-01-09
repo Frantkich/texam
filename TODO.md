@@ -1,13 +1,3 @@
-1. 
-
-2. handle time (keep session)
-
-3. list every exams tries
-
-    a. display result 
-    
-    b. display submitted questions
-
 4. active exam's questions toggle collapse
 
 5. encrypt password

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort, redirect
+from flask import Blueprint, render_template, request, abort
 from flask_login import login_required, current_user
 import json
 
@@ -60,7 +60,7 @@ def start_exam(exam_code):
     if not current_user.exam:
         if scraper.load_questions(exam_code):
             return return_success("Exam started")
-        return return_error(400, "Error passing exam.")
+        return return_error(400, "Error passing exam. (Maybe you already passed it?)")
     return return_error(400, "Exam already started.")
 
 
@@ -86,9 +86,15 @@ def answers_submit():
 
 
 @routes.route("/submit", methods=["POST"])
+@routes.route("/submit/<delay>", methods=["POST"])
 @login_required
-def submit_exam():
+def submit_exam(delay:str = None):
     if not current_user.exam: return return_error(404, "No exam started.")
-    result = scraper.submit_exam()
-    if not result: return return_error(500, "Error submitting exam.")
-    return return_data({"result_id": result.id})
+    if delay:
+        time = scraper.submit_exam_delay(delay)
+        if time == None: return return_error(500, "Error submitting exam.")
+        return return_success(f"Exam will be submitted in {time} minutes.")
+    else:
+        result = scraper.submit_exam()
+        if not result: return return_error(500, "Error submitting exam.")
+        return return_data({"result_id": result.id})

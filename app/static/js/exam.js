@@ -25,11 +25,11 @@ $("#startExam").on("click", function () {
                     location.href = "active";
                 }
             },
-            error: (data) => {custom_alert(data)},
-            complete: (data) => {
+            error: (data) => {
+                custom_alert(data);
                 $(this).prop("disabled", false);
                 $(this).find(".spinner").remove();
-            }
+            },
         });
     }
 });

@@ -2,6 +2,7 @@ from flask import current_app
 from flask_login import current_user
 from requests import Session
 import bs4
+import multiprocessing
 
 from app.tools.db import (
     remove_exam_from_user, 
@@ -37,10 +38,8 @@ def new_tlc_session() -> Session:
 def fetch_new_exams():
     session = new_tlc_session()
     if not session: return None
-    
     response = session.get(current_app.config["TLCEXAM_URL"] + "/test_list")
     soup = bs4.BeautifulSoup(response.content, "html.parser")
-
     exams = []
     for row in soup.find_all("tr")[1:]:
         col = row.find_all("td")
@@ -55,6 +54,7 @@ def fetch_new_exams():
 
 def load_questions(exam_code: str):
     session, resp = open_exam(exam_code)
+    if not resp: return False
     html:str = resp.content
     soup = bs4.BeautifulSoup(html, "html.parser")
     index_start_nb_questions = html.find(b"Question 1 of ")
@@ -133,6 +133,24 @@ def generate_report(session:Session = None, fresh_start: bool = False) -> str:
     return f"{answered_ratio}% of exam's responses answered."
 
 
+def submit_exam_delay(delay:str) -> str:
+    remove_exam_from_user()
+    session = new_tlc_session()
+    if not session: return None
+    session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": current_user.exam.code})
+    session.get(current_app.config["TLCEXAM_URL"] + "/load_questions")
+    resp = session.get(current_app.config["TLCEXAM_URL"] + "/show_timed")
+    soup = bs4.BeautifulSoup(resp.content, "html.parser")
+    time = soup.find(id="disclaimer").text
+    time = time[time.find("have ") + 5: time.find(" minutes")]
+    time = int(time) - ( int(delay) + 1 )
+    print(f"Time: {time} minutes")
+    if time <= 0: return None
+    process = multiprocessing.Process(target=submit_exam(), args=(time * 60 ,))
+    process.start()
+    return time
+
+
 def submit_exam():
     session, resp = open_exam(current_user.exam.code)
     resp = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
@@ -161,7 +179,8 @@ def submit_exam():
 def open_exam(exam_code:str) -> Session:
     session = new_tlc_session()
     if not session: return None
-    session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
+    resp = session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
+    if resp.status_code != 200 or resp.text.find("You cannot take this test") != -1: return None, None
     session.get(current_app.config["TLCEXAM_URL"] + "/load_questions")
     session.get(current_app.config["TLCEXAM_URL"] + "/show_timed")
     session.get(current_app.config["TLCEXAM_URL"] + "/begin_test_message")
@@ -171,4 +190,5 @@ def open_exam(exam_code:str) -> Session:
         "curr_screen": "1",
         "skip_buttons": ""
     })
+    if resp.status_code != 200: return None, None
     return session, resp
