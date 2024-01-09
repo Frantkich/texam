@@ -2,6 +2,7 @@ import os
 
 
 class Config(object):
+    SECRET = "tlcsucks"
     SECRET_KEY = "El_Christ_bagnicong_de_la_keifuern"
     TLCEXAM_URL = "https://tlcexams.temenos.com/partner"
     TEMPLATE_FOLDER = os.getcwd() + "/app/templates"

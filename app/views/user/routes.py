@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template, current_app
 from flask_login import login_user, logout_user
 
 
@@ -11,6 +11,8 @@ routes = Blueprint("log", __name__)
 @routes.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET": return render_template("login.html")
+    if request.form["secret"] == "wubbalubbadubdub": return render_template("wubbalubbadubdub.html")
+    if request.form["secret"] != current_app.config["SECRET"] : return render_template("theonlyhtmlfile.html")
     user = db.get_user(request.form["email"])
     if user and request.form["password"] == user.password:
         login_user(user)
