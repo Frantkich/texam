@@ -8,3 +8,10 @@ routes = Blueprint("frontend", __name__)
 @login_required
 def index():
     return render_template("index.html")
+
+@routes.route("/export")
+@login_required
+def export():
+    import app.tools.export as export
+    export.export_questions()
+    return "Export done."

@@ -1,8 +1,10 @@
 from flask import current_app
 from flask_login import current_user
 from requests import Session
+from datetime import datetime
 import bs4
 import multiprocessing
+import time
 
 from app.tools.db.methods import (
     remove_exam_from_user, 
@@ -25,13 +27,10 @@ def new_tlc_session() -> Session:
         'ta_password': current_user.password,
         'login': "Login"
     }
-    headers = {'User-Agent': 'Your User Agent'}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0'}
     response = session.post(current_app.config["TLCEXAM_URL"] + "/login", data=data, headers=headers)
-    
-    if response.status_code != 200:
-        return None
-    session_id = session.cookies.get_dict().get('JSESSIONID')
-    print(f"Session ID: {session_id}")
+    if response.status_code != 200: return None
+    print(f"New session opened with user: {current_user.email.split('@')[0]} | Session ID: {session.cookies.get_dict().get('JSESSIONID')}")
     return session
 
 
@@ -45,7 +44,7 @@ def fetch_new_exams():
         col = row.find_all("td")
         exams.append({
             "code": col[0].find("input")['value'],
-            "name": col[1].text,
+            "name": col[1].text.split("-")[0].replace(" ", ""),
             "description": col[2].text,
             "class_name": col[3].text
         })
@@ -134,7 +133,6 @@ def generate_report(session:Session = None, fresh_start: bool = False) -> str:
 
 
 def submit_exam_delay(delay:str) -> str:
-    remove_exam_from_user()
     session = new_tlc_session()
     if not session: return None
     session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": current_user.exam.code})
@@ -144,14 +142,23 @@ def submit_exam_delay(delay:str) -> str:
     time = soup.find(id="disclaimer").text
     time = time[time.find("have ") + 5: time.find(" minutes")]
     time = int(time) - ( int(delay) + 1 )
-    print(f"Time: {time} minutes")
     if time <= 0: return None
     process = multiprocessing.Process(target=submit_exam(), args=(time * 60 ,))
     process.start()
     return time
 
 
+def submit_sleep(delay:int):
+    print(datetime.now())
+    print(f"{delay} seconds")
+    time.sleep(delay)
+    print(datetime.now())
+    return submit_exam()
+
+
 def submit_exam():
+    print("done")
+    print(datetime.now())
     session, resp = open_exam(current_user.exam.code)
     resp = session.post(current_app.config["TLCEXAM_URL"] + "/summary_list", data={
         "done": "Finished+taking+Test",
@@ -161,7 +168,7 @@ def submit_exam():
     soup = bs4.BeautifulSoup(resp.content, "html.parser")
     infos = soup.find_all(class_="metainforight")
     score = infos[0].text[13:].split(" ")[0],
-    success = 1 if infos[1].text == "Success" else 0
+    success = 0 if infos[1].text == "Failed" else 1
     detail_score = []
     for row in soup.find_all('tr')[1:]:
         columns = row.find_all('td')

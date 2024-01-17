@@ -1,15 +1,23 @@
 <ul id="questions" class="collapse multi-collapse mt-2 list-group">
     {% for question in exam.questions %}
     <li class="question mt-2 list-group-item">
-        <div class="d-flex">
-            <i class="questionCollapseButton bi bi-chevron-bar-down me-2" type="button" data-bs-toggle="collapse" data-bs-target="#answerList_{{question.id}}" aria-expanded="false" aria-controls="answerList_{{question.id}}"></i>
-            <p class="questionDesc m-0">{{ question.description }}</p>
+        <div class="d-flex justify-content-between">
+            <div class="d-flex w-75">
+                <i class="questionCollapseButton bi bi-chevron-bar-down me-2" type="button" data-bs-toggle="collapse" data-bs-target="#answerList_{{question.id}}" aria-expanded="false" aria-controls="answerList_{{question.id}}"></i>
+                <p class="questionDesc m-0">{{ question.description }}</p>
+            </div>
+            <div>
+                <i class="bi bi-check" style="color: green;"></i>
+                <span>Last updated by:</span>
+                {% set name = question.user_last_answer.email.split('@')[0] %}
+                <span class="fw-bold">{{ name }}</span>
+            </div>
         </div>
         <ul id="answerList_{{question.id}}" class="answerList list-group collapse mt-2">
             {% for answer in question.answers %}
             <li class="answer list-group-item">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex  align-items-center">
+                    <div class="d-flex align-items-center">
                         <div>
                             <select class="answerScore form-select" id="{{answer.id}}" value="{{ answer.score }}">
                                 <option value="0"></option>
@@ -31,3 +39,7 @@
     </li>
     {% endfor %}
 </ul>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/questions_list.js') }}"></script>
+{% endblock %}

@@ -48,6 +48,15 @@ def create_exam(name:str, code:str, description:str, class_name:str) -> Exams:
     db_c.session.commit()
     return exam
 
+def update_exam_code(exams) -> Exams:
+    for exam in exams:
+        existing_exam = get_exams(exam["code"])
+        if not existing_exam:
+            create_exam(exam["name"], exam["code"], exam["description"], exam["class_name"])
+        elif existing_exam.code != exam["code"]:
+            exam.code = exam["code"]
+    db_c.session.commit()
+    return exam
 
 # Questions
 def get_question_in_exam(exam_id, question_desc:str) -> Questions:
@@ -71,6 +80,7 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
     if not exam:
         return None
     for question in questions:
+        answer_db = None
         for answer in question["answers"]:
             answer_db:Answers = Answers.query.filter_by(id=answer["id"]).first()
             if answer_db:
@@ -84,6 +94,8 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
                         answer_db.score = None
             else:
                 return None
+        question_db:Questions = Questions.query.filter_by(id=answer_db.question_id).first()
+        question_db.user_last_answer = current_user
     db_c.session.commit()
     return exam
 
@@ -97,9 +109,10 @@ def add_exam_questions(code:str, new_questions:list) -> Exams:
                 score = answer["score"] if "score" in answer else None
                 remarks = answer["remarks"] if "remarks" in answer else None
                 answers.append(Answers(description=answer["description"], score=score, remarks=remarks))
-            exam.questions.append(Questions(description=new_question["description"], answers=answers))
+            exam.questions.append(Questions(description=new_question["description"], answers=answers, user_last_answer=current_user))
     db_c.session.commit()
     return exam
+
 
 # Results
 def create_result() -> Results:

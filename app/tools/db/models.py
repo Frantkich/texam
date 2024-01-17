@@ -53,8 +53,10 @@ class Questions(db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
     description: Mapped[str]            = mapped_column(String(2042), nullable=False)
     exam_id: Mapped[int]                = mapped_column(ForeignKey("exams.id"))
+    user_id: Mapped[int]                = mapped_column(ForeignKey("users.id"))
     answers: Mapped[List["Answers"]]    = relationship(cascade="all, delete-orphan")
     active_for: Mapped[List["Users"]]   = relationship(secondary=user_question)
+    user_last_answer: Mapped["Users"]   = relationship()
 
 
 class Answers(db_c.Model):

@@ -1,5 +1,5 @@
 "use strict";
-console.log('exam_questions.js loaded');
+console.log('questions_list.js loaded');
 
 
 $(".answerScore").on("input", function() {
@@ -25,11 +25,13 @@ $(".answerScore").on("input", function() {
 });
 
 
-$(".bi-chevron-bar-down").on("click", function() {
-    $(this).toggleClass("bi-chevron-bar-up");
-    $(this).toggleClass("bi-chevron-bar-down");
-});
+$(".bi-chevron-bar-up").on("click", function() {toggle_chevron($(this));});
+$(".bi-chevron-bar-down").on("click", function() {toggle_chevron($(this));});
 
+function toggle_chevron(el) {
+    el.toggleClass("bi-chevron-bar-up");
+    el.toggleClass("bi-chevron-bar-down");
+}
 
 function selectSelections() {
     $(".answerScore").each((index, answerScore) => {
@@ -52,3 +54,22 @@ function uncollapseRemarks() {
     });
 }
 uncollapseRemarks();
+
+function uncollapseQuestions() {
+    $(".question").each((index, question) => {
+        let validated = false;
+        $(question).find(".answerScore").each((index, answerScore) => {
+            if ($(answerScore).val() == 3) {validated = true;}
+        });
+        if (! validated) {
+            $(question).find(".bi-check").hide();
+            $(question).find(".questionCollapseButton").click();
+        }
+    });
+}
+uncollapseQuestions();
+
+// $("#questionList").on("click", function() {
+//     selectSelections();
+//     uncollapseRemarks();
+// }

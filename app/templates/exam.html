@@ -26,7 +26,7 @@
     <div class="d-ruby">
         <button id="startExam" class="btn btn-primary btn-spinner" type="button"><span role="status">Start exam</span></button>
         {% if exam.questions | count != 0 %}
-        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
+        <button id="questionList" class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
         {% endif %}
         <button id="saveAnswers" class="btn btn-warning btn-spinner collapse multi-collapse" type="button"><span role="status">Save questions's answers</span></button>
         <div id="liveAlert"></div>
@@ -36,6 +36,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/exam_questions.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/exam.js') }}"></script>
 {% endblock %}

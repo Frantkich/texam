@@ -1,5 +1,5 @@
 "use strict";
-console.log('main.js loaded');
+console.log('script.js loaded');
 
 export { custom_alert };
 

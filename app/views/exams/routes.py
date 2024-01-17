@@ -12,6 +12,7 @@ from app.tools.db.methods import (
     get_exams,
     update_exam_questions,
     create_exam,
+    update_exam_code
 )
 import app.views.exams.scraper as scraper
 
@@ -21,18 +22,15 @@ routes = Blueprint("exams", __name__, url_prefix="/exams")
 @routes.route("/")
 @login_required
 def index():
-    return render_template("exams.html", exams=get_exams())
+    return render_template("exams.html")
 
 
 @routes.route("/fetch", methods=["UPDATE"])
 @login_required
-def fetch_new_exam():
+def fetch_exams():
     exams = scraper.fetch_new_exams()
-    if not exams:
-        return return_error(500, "Error fetching exams.")
-    for exam in exams:
-        if not get_exams(exam["code"]):
-            create_exam(exam["name"], exam["code"], exam["description"], exam["class_name"])
+    if not exams: return return_error(500, "Error fetching exams.")
+    update_exam_code(exams)
     return return_data(exams)
 
 

@@ -27,14 +27,13 @@
                     </div>
                 </li>
             </ul>
+            <div id="liveAlert"></div>
         </div>
-        <div id="liveAlert"></div>
     </div>
     {% include "base/questions_list.html" %}
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/exam_questions.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/exam_active.js') }}"></script>
 {% endblock %}
