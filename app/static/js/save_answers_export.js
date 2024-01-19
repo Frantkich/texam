@@ -25,7 +25,7 @@ function saveAnswers() {
         }));
     });
     let examData = Object({
-        code: $("#examCode").text().trim(),
+        name: $("#examName").val(),
         questions: questions
     })
     return $.ajax({
@@ -35,7 +35,7 @@ function saveAnswers() {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         complete: (data) => {        
-            custom_alert(data)
+            custom_alert(data.responseJSON)
             $("#saveAnswers").prop("disabled", false);
             $("#saveAnswers .spinner").remove();
         }

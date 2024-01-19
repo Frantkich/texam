@@ -33,7 +33,7 @@ user_question = Table(
 
 class Users(UserMixin, db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
-    email: Mapped[str]                  = mapped_column(String(255), nullable=False, unique=True)
+    email: Mapped[str]                  = mapped_column(String(255), unique=True)
     password: Mapped[str]               = mapped_column(String(255), nullable=False)
     is_admin: Mapped[bool]              = mapped_column(Boolean, default=False)
     exam_id: Mapped[int]                = mapped_column(ForeignKey("exams.id"), nullable=True)
@@ -42,16 +42,17 @@ class Users(UserMixin, db_c.Model):
 
 class Exams(db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
-    name: Mapped[str]                   = mapped_column(String(255), nullable=False, unique=True)
-    code: Mapped[str]                   = mapped_column(String(255), nullable=False, unique=True)
-    class_name: Mapped[str]             = mapped_column(String(255), nullable=False)
-    description: Mapped[str]            = mapped_column(String(2042), nullable=False)
+    name: Mapped[str]                   = mapped_column(String(255), unique=True)
+    long_name: Mapped[str]              = mapped_column(String(255))
+    code: Mapped[str]                   = mapped_column(String(255), unique=True)
+    class_name: Mapped[str]             = mapped_column(String(255))
+    description: Mapped[str]            = mapped_column(String(2042))
     questions: Mapped[List["Questions"]]= relationship(cascade="all, delete-orphan")
 
 
 class Questions(db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
-    description: Mapped[str]            = mapped_column(String(2042), nullable=False)
+    description: Mapped[str]            = mapped_column(String(2042))
     exam_id: Mapped[int]                = mapped_column(ForeignKey("exams.id"))
     user_id: Mapped[int]                = mapped_column(ForeignKey("users.id"))
     answers: Mapped[List["Answers"]]    = relationship(cascade="all, delete-orphan")
@@ -61,7 +62,7 @@ class Questions(db_c.Model):
 
 class Answers(db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
-    description: Mapped[str]            = mapped_column(String(2042), nullable=False)
+    description: Mapped[str]            = mapped_column(String(2042))
     score: Mapped[int]                  = mapped_column(Integer, nullable=True)
     remarks: Mapped[str]                = mapped_column(Text(2042), nullable=True)
     question_id: Mapped[int]            = mapped_column(ForeignKey("questions.id"))
@@ -69,7 +70,7 @@ class Answers(db_c.Model):
 
 class Results(db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
-    date: Mapped[datetime]              = mapped_column(DateTime, nullable=False)
+    date: Mapped[datetime]              = mapped_column(DateTime)
     success: Mapped[bool]               = mapped_column(Boolean, nullable=True)
     score: Mapped[str]                  = mapped_column(String(255), nullable=True)
     detail_score: Mapped[dict]          = mapped_column(PickleType, nullable=True)

@@ -16,7 +16,7 @@ from app.tools.db.methods import (
     update_result_questions,
     create_result,
     get_last_result,
-    get_last_exam_results
+    get_last_exam_results,
 )
 
 
@@ -34,7 +34,7 @@ def new_tlc_session() -> Session:
     return session
 
 
-def fetch_new_exams():
+def fetch_user_exams():
     session = new_tlc_session()
     if not session: return None
     response = session.get(current_app.config["TLCEXAM_URL"] + "/test_list")
@@ -42,24 +42,27 @@ def fetch_new_exams():
     exams = []
     for row in soup.find_all("tr")[1:]:
         col = row.find_all("td")
+        formated_name = col[1].text.replace(" ", "")
+        formated_name = formated_name[:formated_name.index("-R")]
         exams.append({
             "code": col[0].find("input")['value'],
-            "name": col[1].text.split("-")[0].replace(" ", ""),
+            "name": formated_name,
+            "long_name": col[1].text,
             "description": col[2].text,
             "class_name": col[3].text
         })
     return exams
 
 
-def load_questions(exam_code: str):
-    session, resp = open_exam(exam_code)
+def load_questions(name: str):
+    session, resp = open_exam(name)
     if not resp: return False
     html:str = resp.content
     soup = bs4.BeautifulSoup(html, "html.parser")
     index_start_nb_questions = html.find(b"Question 1 of ")
     index_end_nb_questions = html.find(b"\n", index_start_nb_questions + 1)
     nb_questions = int(html[index_start_nb_questions + 13:index_end_nb_questions])
-    assign_exam_to_user(exam_code)
+    assign_exam_to_user(name)
     create_result()
     for _ in range(nb_questions):
         question_text = soup.find(id="questiontext").text
@@ -67,7 +70,7 @@ def load_questions(exam_code: str):
         if question:
             bind_question_to_user(question)
         else:
-            exam = add_exam_questions(exam_code, [{
+            exam = add_exam_questions(name, [{
                 "description": question_text,
                 "answers": [{"description": tr.find_all("td")[-1].text} for tr in soup.find_all("tr")[1:]]
             }])
@@ -183,10 +186,10 @@ def submit_exam():
     return result
 
 
-def open_exam(exam_code:str) -> Session:
+def open_exam(code:str) -> Session:
     session = new_tlc_session()
     if not session: return None
-    resp = session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": exam_code})
+    resp = session.post(current_app.config["TLCEXAM_URL"] + "/test_list", data={"take_test": code})
     if resp.status_code != 200 or resp.text.find("You cannot take this test") != -1: return None, None
     session.get(current_app.config["TLCEXAM_URL"] + "/load_questions")
     session.get(current_app.config["TLCEXAM_URL"] + "/show_timed")

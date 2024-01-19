@@ -12,8 +12,8 @@ def get_user(email:str) -> Users:
     return Users.query.filter_by(email=email).first()
 
 
-def assign_exam_to_user(exam_code:str):
-    exam:Exams = get_exams(exam_code)
+def assign_exam_to_user(exam_name:str):
+    exam:Exams = get_exams(exam_name)
     if not exam: return False
     current_user.exam = exam
     db_c.session.commit()
@@ -35,26 +35,27 @@ def bind_question_to_user(question:Questions) -> Questions:
 
 
 # Exams
-def get_exams(code:str=None) -> Exams:
-    if not code:
+def get_exams(name:str=None) -> Exams:
+    if not name:
         return Exams.query.all()
     else:
-        return Exams.query.filter_by(code=code).first()
+        return Exams.query.filter_by(name=name).first()
 
 
-def create_exam(name:str, code:str, description:str, class_name:str) -> Exams:
-    exam:Exams = Exams(name=name, code=code, description=description, class_name=class_name)
+def create_exam(name:str, code:str, long_name:str, description:str, class_name:str) -> Exams:
+    exam:Exams = Exams(name=name, long_name=long_name, code=code, description=description, class_name=class_name)
     db_c.session.add(exam)
     db_c.session.commit()
     return exam
 
-def update_exam_code(exams) -> Exams:
+def update_exam(exams) -> Exams:
     for exam in exams:
-        existing_exam = get_exams(exam["code"])
+        existing_exam = get_exams(exam["name"])
         if not existing_exam:
-            create_exam(exam["name"], exam["code"], exam["description"], exam["class_name"])
+            create_exam(exam["name"], exam["long_name"], exam["code"], exam["description"], exam["class_name"])
         elif existing_exam.code != exam["code"]:
-            exam.code = exam["code"]
+            existing_exam.long_name = exam["long_name"]
+            existing_exam.code = exam["code"]
     db_c.session.commit()
     return exam
 
@@ -71,12 +72,13 @@ def search_questions(id:int = None, search_string:str = None) -> Questions:
     else:
         return None
 
+
 def get_all_questions() -> Questions:
     return Questions.query.all()
 
 
-def update_exam_questions(code:str, questions:dict) -> Exams:
-    exam:Exams = Exams.query.filter_by(code=code).first()
+def update_exam_questions(name:str, questions:dict) -> Exams:
+    exam:Exams = Exams.query.filter_by(name=name).first()
     if not exam:
         return None
     for question in questions:
@@ -100,8 +102,8 @@ def update_exam_questions(code:str, questions:dict) -> Exams:
     return exam
 
 
-def add_exam_questions(code:str, new_questions:list) -> Exams:
-    exam:Exams = Exams.query.filter_by(code=code).first()
+def add_exam_questions(name:str, new_questions:list) -> Exams:
+    exam:Exams = Exams.query.filter_by(name=name).first()
     for new_question in new_questions:
         if not [1 for old_question in exam.questions if old_question.description == new_question["description"]]:
             answers = []
@@ -147,5 +149,12 @@ def get_user_results(id:int = None) -> Results:
     else:
         return Results.query.filter_by(id=id).first_or_404()
 
-def get_last_exam_results(id:int = None) -> Results:
-    return Results.query.filter(and_(Results.user_id == current_user.id, Results.exam_id == current_user.exam_id)).order_by(Results.date.desc()).first()
+def get_last_exam_results() -> Results:
+    return Results.query.filter(
+        and_(
+            Results.user_id == current_user.id, 
+            Results.exam_id == current_user.exam_id
+        )).order_by(Results.date.desc()).first()
+
+def get_exam_results(exam_id:int = None) -> Results:
+    return Results.query.filter_by(exam_id=exam_id).all()

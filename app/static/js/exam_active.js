@@ -16,7 +16,7 @@ $("#submit_now").on("click", function () {
                 window.location.href = `/results/${data.result_id}`;
             },
             error: (data) => {
-                custom_alert(data);
+                custom_alert(data.responseJSON);
                 $("#submit").find(".spinner").remove();
                 $("#submit").prop("disabled", false);
             }
@@ -33,7 +33,7 @@ $("#submit_delay").on("click", function () {
             url: `submit/${$("#submit_delay_count").val()}`,
             type: "POST",
             complete: (data) => {
-                custom_alert(data);
+                custom_alert(data.responseJSON);
                 $("#submit").find(".spinner").remove();
                 $("#submit").prop("disabled", false);
             },
@@ -52,7 +52,7 @@ $("#answer").on("click", function () {
                 complete: (data) => {
                     $(this).find(".spinner").remove();
                     $(this).prop("disabled", false);
-                    custom_alert(data, 10000)
+                    custom_alert(data.responseJSON, 10000)
                 }
             });
         });

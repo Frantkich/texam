@@ -8,9 +8,7 @@
 
 {% block content %}
 <div class="container">
-    <h3 id="examName" class="mb-3">Active Exam - {{ exam.name }}</h3>
-    <p id="examCode" hidden>{{ exam.code }}</p>
-
+    <h3 id="examName" class="mb-3" value="{{ exam.name }}">Active Exam - {{ exam.name }}</h3>
     <div class="buttonRow">
         <button id="answer" class="btn btn-primary btn-spinner" type="button"><span role="status">Answering exam's questions</span></button>
         <div class="btn-group" role="group">

@@ -26,7 +26,7 @@ $("#startExam").on("click", function () {
                 }
             },
             error: (data) => {
-                custom_alert(data);
+                custom_alert(data.responseJSON);
                 $(this).prop("disabled", false);
                 $(this).find(".spinner").remove();
             },

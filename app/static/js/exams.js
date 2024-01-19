@@ -1,43 +1,58 @@
 "use strict";
 console.log('exams_index.js loaded');
 
+import { custom_alert } from './script.js';
+
 $("#searchInput").val("");
 
 $("#searchInput").on("input", function() {
+    $("#itemList li").show();
     var selected = $(this).val();
-    $("ul li").show();
-    $("ul li").filter(function() {
+    $("#itemList li").filter(function() {
         return $(this).text().toLowerCase().indexOf(selected.toLowerCase()) === -1;
     }).hide();
 });
 
+function function_activate_button(btn) {
+    if (btn.prop("disabled")) {
+        btn.prop("disabled", false);
+        btn.find(".spinner").remove();
+    } else {
+        btn.prop("disabled", true);
+        btn.html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${btn.text()}`);
+    }
+}
 
-function fetch_exams() { 
-    $("#fetch").prop("disabled", true);
-    $("#fetch").html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$("#fetch").text()}`);
+function fetch_exams(mode) {
+    function_activate_button($(`#fetch_${mode}`));
     $.ajax({
-        url: "fetch",
+        url: `fetch/${mode}`,
         type: "UPDATE",
         success: (data) => {
             if (data.length) {
                 $("#itemList").empty();
                 data.forEach((exam) => {
-                    $("#itemList").append(`<a href="${ exam.code }"><li class="list-group-item">${ exam.name }</li></a>`);
+                    $("#itemList").append(`<a href="${ exam.name }"><li class="list-group-item">${ exam.name }</li></a>`);
                 });
             } else {
                 alert("Error: " + data.message);
             }
+            custom_alert({ "status": "success", "message": `Fetched ${data.length} exams.`});
+        },
+        error: (data) => {
+            custom_alert(data.responseJSON);
         },
         complete: (data) => {
-            console.log(data)
-            $("#fetch").prop("disabled", false);
-            $("#fetch").find(".spinner").remove();
+            function_activate_button($(`#fetch_${mode}`));
         }
     });
 }
 
-$("#fetch").on("click", () => { 
-    fetch_exams();
+$("#fetch_user").on("click", () => { 
+    fetch_exams("user");
+});
+$("#fetch_all").on("click", () => { 
+    fetch_exams("all");
 });
 
-fetch_exams();
+fetch_exams("user");

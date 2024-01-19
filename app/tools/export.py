@@ -46,7 +46,7 @@ def export_questions():
                 continue
             print(f"File name: {filename}")
             print(f"Sending {len(questions)} questions...")
-            add_exam_questions(exam.code, questions)
+            add_exam_questions(exam.name, questions)
             print(f"Questions sent.")
         except Exception as e:
             print(f"Error: {e}")

@@ -7,13 +7,7 @@ from app.tools.helpers import (
     return_success,
     return_data
 )
-from app.tools.db.methods import (
-    get_exams,
-    get_exams,
-    update_exam_questions,
-    create_exam,
-    update_exam_code
-)
+import app.tools.db.methods as db_methods 
 import app.views.exams.scraper as scraper
 
 routes = Blueprint("exams", __name__, url_prefix="/exams")
@@ -25,38 +19,53 @@ def index():
     return render_template("exams.html")
 
 
-@routes.route("/fetch", methods=["UPDATE"])
+@routes.route("/fetch/<mode>", methods=["UPDATE"])
 @login_required
-def fetch_exams():
-    exams = scraper.fetch_new_exams()
-    if not exams: return return_error(500, "Error fetching exams.")
-    update_exam_code(exams)
+def fetch_exams(mode:str = "all"):
+    if mode == "all":
+        exams = db_methods.get_exams()
+        exams = [{
+            "code": exam.code,
+            "name": exam.name,
+            "long_name": exam.long_name,
+            "description": exam.description,
+            "class_name": exam.class_name
+        } for exam in exams]
+    elif mode == "user":
+        exams = scraper.fetch_user_exams()
+        if not exams: return return_error(500, "Error fetching exams.")
+        db_methods.update_exam(exams)
     return return_data(exams)
 
 
-@routes.route("/<exam_code>")
+@routes.route("/<exam_name>")
 @login_required
-def exam(exam_code: str):
-    exam = get_exams(exam_code)
+def exam(exam_name: str):
+    exam = db_methods.get_exams(exam_name)
     if not exam:
         return abort(404)
-    return render_template("exam.html", exam=exam)
+    results = db_methods.get_exam_results(exam.id)
+    stats = {
+        "passed" : sum([1 for result in results if result.success]),
+        "failed" : sum([1 for result in results if not result.success]),
+    }
+    return render_template("exam.html", exam=exam, stats=stats)
 
 
 @routes.route("/answers/save", methods=["UPDATE"])
 @login_required
 def answers_save():
     examData = json.loads(request.data)
-    if update_exam_questions(examData["code"], examData["questions"]):
+    if db_methods.update_exam_questions(examData["name"], examData["questions"]):
         return return_success("Answers saved.")
     return return_error(500, "Error saving answers.")
 
 
-@routes.route("/start/<exam_code>", methods=["POST"])
+@routes.route("/start/<exam_name>", methods=["POST"])
 @login_required
-def start_exam(exam_code):
+def start_exam(exam_name):
     if not current_user.exam:
-        if scraper.load_questions(exam_code):
+        if scraper.load_questions(exam_name):
             return return_success("Exam started")
         return return_error(400, "Error passing exam. (Maybe you already passed it?)")
     return return_error(400, "Exam already started.")
