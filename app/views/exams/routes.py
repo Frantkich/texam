@@ -52,10 +52,9 @@ def exam(exam_name: str):
     return render_template("exam.html", exam=exam, stats=stats)
 
 
-@routes.route("<exam_code>/answers/save", methods=["UPDATE"])
 @routes.route("/answers/save", methods=["UPDATE"])
 @login_required
-def answers_save(exam_code:str = None):
+def answers_save():
     examData = json.loads(request.data)
     if db_methods.update_exam_questions(examData["name"], examData["questions"]):
         return return_success("Answers saved.")
@@ -84,7 +83,7 @@ def active_exam():
     return render_template("activeExam.html", exam=exam)
 
 
-@routes.route("/answers/submit", methods=["POST"])
+@routes.route("/active/submit/answers", methods=["POST"])
 @login_required
 def answers_submit():
     if not current_user.exam: return return_error(404, "No exam started.")
@@ -93,8 +92,8 @@ def answers_submit():
     return return_success(report)
 
 
-@routes.route("/submit", methods=["POST"])
-@routes.route("/submit/<delay>", methods=["POST"])
+@routes.route("/active/submit/exam", methods=["POST"])
+@routes.route("/active/submit/exam/<delay>", methods=["POST"])
 @login_required
 def submit_exam(delay:str = None):
     if not current_user.exam: return return_error(404, "No exam started.")

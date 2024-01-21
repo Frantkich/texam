@@ -12,7 +12,7 @@
             <ul class="list-group">
                 <li class="list-group-item">Full name: {{ exam.long_name }}</li>
                 <li class="list-group-item">Description: {{ exam.description }}</li>
-                <li class="list-group-item d-flex">Code:&nbsp;<div id="examCode">{{ exam.code }}</div></li>
+                <li class="list-group-item d-flex">Code: {{ exam.code }}</li>
                 <li class="list-group-item">Class: {{ exam.class_name }}</li>
                 <li class="list-group-item">Nb questions registered: {{ exam.questions | count }}</li>
             </ul>

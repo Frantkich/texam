@@ -1,7 +1,7 @@
 "use strict";
 console.log('script.js loaded');
 
-export { custom_alert };
+export { custom_alert, get_base_url };
 
 
 function custom_alert(resp, timeout=2000) {
@@ -22,4 +22,8 @@ function custom_alert(resp, timeout=2000) {
     setTimeout(() => {
         alertDiv.remove();
     }, timeout);
+}
+
+function get_base_url() {
+    return window.location.origin + $("html base").attr("href");
 }

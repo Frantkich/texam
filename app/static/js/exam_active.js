@@ -1,7 +1,7 @@
 "use strict";
 console.log('exam_active.js loaded');
 
-import { custom_alert } from './script.js';
+import { custom_alert, get_base_url } from './script.js';
 import { saveAnswers } from './save_answers_export.js';
 
 
@@ -10,7 +10,7 @@ $("#submit_now").on("click", function () {
         $("#submit").prop("disabled", true);
         $("#submit").html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$("#submit").text()}`);
         $.ajax({
-            url: `${document.location.pathname}/submit`,
+            url: `${get_base_url()}/exams/active/submit/exam`,
             type: "POST",
             success: (data) => {
                 window.location.href = `texam/results/${data.result_id}`;
@@ -30,7 +30,7 @@ $("#submit_delay").on("click", function () {
         $("#submit").prop("disabled", true);
         $("#submit").html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$("#submit").text()}`);
         $.ajax({
-            url: `${document.location.pathname}/submit/${$("#submit_delay_count").val()}`,
+            url: `${get_base_url()}/exams/active/submit/exam/${$("#submit_delay_count").val()}`,
             type: "POST",
             complete: (data) => {
                 custom_alert(data.responseJSON);
@@ -47,7 +47,7 @@ $("#answer").on("click", function () {
         $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);
         saveAnswers().then(response => {
             $.ajax({
-                url: `${document.location.pathname}/answers/submit`,
+                url: `${get_base_url()}/exams/active/submit/answers`,
                 type: "POST",
                 complete: (data) => {
                     $(this).find(".spinner").remove();

@@ -1,7 +1,7 @@
 "use strict";
 console.log('save_answers_export.js loaded');
 
-import { custom_alert } from './script.js';
+import { custom_alert, get_base_url } from './script.js';
 
 export { saveAnswers };
 
@@ -29,7 +29,7 @@ function saveAnswers() {
         questions: questions
     })
     return $.ajax({
-        url: `${document.location.pathname}/answers/save`,
+        url: `${get_base_url()}/exams/answers/save`,
         type: "UPDATE",
         data: JSON.stringify(examData),
         contentType: "application/json; charset=utf-8",

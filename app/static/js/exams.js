@@ -1,7 +1,7 @@
 "use strict";
 console.log('exams_index.js loaded');
 
-import { custom_alert } from './script.js';
+import { custom_alert, get_base_url } from './script.js';
 
 $("#searchInput").val("");
 
@@ -26,7 +26,7 @@ function function_activate_button(btn) {
 function fetch_exams(mode) {
     function_activate_button($(`#fetch_${mode}`));
     $.ajax({
-        url: `${document.location.pathname}/fetch/${mode}`,
+        url: `${get_base_url()}/exams/fetch/${mode}`,
         type: "UPDATE",
         success: (data) => {
             if (data.length) {

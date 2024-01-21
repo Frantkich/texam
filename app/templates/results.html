@@ -20,7 +20,7 @@
             {% for result in results %}
             {% if result.ended %}
             <tr data-href="{{result.id}}">
-                <td>{{ result.exam.name }}</td>
+                <td>{{ result.exam.long_name }}</td>
                 <td>{{ result.date }}</td>
                 {% if result.success %}
                     <td>Success</td>

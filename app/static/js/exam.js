@@ -1,7 +1,7 @@
 "use strict";
 console.log('exam.js loaded');
 
-import { custom_alert } from './script.js';
+import { custom_alert, get_base_url } from './script.js';
 import { saveAnswers } from './save_answers_export.js';
 
 /**
@@ -13,12 +13,12 @@ $("#saveAnswers").on("click", () => {
 });
 
 $("#startExam").on("click", function () {
-    let examCode = $("#examCode").text().trim();
+    let exam_name = $("#examName").text().trim();
     if (window.confirm("Are you sure ?")) {
         $(this).prop("disabled", true);
         $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);
         $.ajax({
-            url: `${document.location.pathname}/start/${examCode}`,
+            url: `${get_base_url()}/exams/start/${exam_name}`,
             type: "POST",
             success: (data) => {
                 if (data.status == "success") {
