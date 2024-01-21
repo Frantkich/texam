@@ -10,10 +10,10 @@ $("#submit_now").on("click", function () {
         $("#submit").prop("disabled", true);
         $("#submit").html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$("#submit").text()}`);
         $.ajax({
-            url: "submit",
+            url: `${document.location.pathname}/submit`,
             type: "POST",
             success: (data) => {
-                window.location.href = `/results/${data.result_id}`;
+                window.location.href = `texam/results/${data.result_id}`;
             },
             error: (data) => {
                 custom_alert(data.responseJSON);
@@ -30,7 +30,7 @@ $("#submit_delay").on("click", function () {
         $("#submit").prop("disabled", true);
         $("#submit").html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$("#submit").text()}`);
         $.ajax({
-            url: `submit/${$("#submit_delay_count").val()}`,
+            url: `${document.location.pathname}/submit/${$("#submit_delay_count").val()}`,
             type: "POST",
             complete: (data) => {
                 custom_alert(data.responseJSON);
@@ -47,7 +47,7 @@ $("#answer").on("click", function () {
         $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);
         saveAnswers().then(response => {
             $.ajax({
-                url: "answers/submit",
+                url: `${document.location.pathname}/answers/submit`,
                 type: "POST",
                 complete: (data) => {
                     $(this).find(".spinner").remove();

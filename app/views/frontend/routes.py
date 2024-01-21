@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
 
-routes = Blueprint("frontend", __name__)
+routes = Blueprint("frontend", __name__, url_prefix="")
 
 
 @routes.route("/")

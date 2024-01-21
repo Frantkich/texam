@@ -25,11 +25,11 @@ function saveAnswers() {
         }));
     });
     let examData = Object({
-        name: $("#examName").val(),
+        name: $("#examName").text(),
         questions: questions
     })
     return $.ajax({
-        url: "answers/save",
+        url: `${document.location.pathname}/answers/save`,
         type: "UPDATE",
         data: JSON.stringify(examData),
         contentType: "application/json; charset=utf-8",

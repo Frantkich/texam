@@ -52,9 +52,10 @@ def exam(exam_name: str):
     return render_template("exam.html", exam=exam, stats=stats)
 
 
+@routes.route("<exam_code>/answers/save", methods=["UPDATE"])
 @routes.route("/answers/save", methods=["UPDATE"])
 @login_required
-def answers_save():
+def answers_save(exam_code:str = None):
     examData = json.loads(request.data)
     if db_methods.update_exam_questions(examData["name"], examData["questions"]):
         return return_success("Answers saved.")

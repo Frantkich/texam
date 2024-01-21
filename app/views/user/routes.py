@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user
 from app.tools.db.methods import get_user
 
 
-routes = Blueprint("log", __name__)
+routes = Blueprint("log", __name__, url_prefix="")
 
 
 @routes.route("/login", methods=["GET", "POST"])
@@ -16,11 +16,11 @@ def login():
     user = get_user(request.form["email"])
     if user and request.form["password"] == user.password:
         login_user(user)
-        return redirect(url_for("frontend.index"))
-    return redirect(url_for("log.login"))
+        return redirect(url_for("main.frontend.index"))
+    return redirect(url_for("main.log.login"))
 
 
 @routes.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("log.login"))
+    return redirect(url_for("main.log.login"))

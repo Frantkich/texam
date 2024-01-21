@@ -18,7 +18,7 @@ $("#startExam").on("click", function () {
         $(this).prop("disabled", true);
         $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);
         $.ajax({
-            url: "start/" + examCode,
+            url: `${document.location.pathname}/start/${examCode}`,
             type: "POST",
             success: (data) => {
                 if (data.status == "success") {

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-sm m-2 p-2">
     <div class="container-fluid">
-        <a class="navbar-brand ms-3" href="{{ '/' if current_user.is_authenticated else url_for('log.login') }}"><img src="{{ url_for('static', filename='favicons/favicon-32x32.png') }}" alt="logo"></a>
+        <a class="navbar-brand ms-3" href="{{ url_for('main.frontend.index') if current_user.is_authenticated else url_for('main.log.login') }}"><img src="{{ url_for('static', filename='favicons/favicon-32x32.png') }}" alt="logo"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -9,29 +9,26 @@
             <ul class="navbar-nav d-flex justify-content-between w-100">
                 <div class="d-flex">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('frontend.index') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('main.exams.index') }}">Exams</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('exams.index') }}">Exams</a>
+                        <a class="nav-link" href="{{ url_for('main.questions.index') }}">Questions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('questions.index') }}">Questions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('results.index') }}">Results</a>
+                        <a class="nav-link" href="{{ url_for('main.results.index') }}">Results</a>
                     </li>
                     {% if current_user.exam %}
-                    <a class="nav-link" href="{{ url_for('exams.active_exam') }}"><b>Active Exam</b></a>
+                    <a class="nav-link" href="{{ url_for('main.exams.active_exam') }}"><b>Active Exam</b></a>
                     {% endif %}
                 </div>
                 <div class="d-flex">
                     {% if not current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('log.login') }}"><b>Connect</b></a>
+                        <a class="nav-link" href="{{ url_for('main.log.login') }}"><b>Connect</b></a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('log.logout') }}">Disconnect</a>
+                        <a class="nav-link" href="{{ url_for('main.log.logout') }}">Disconnect</a>
                     </li>
                     {% endif %}
                 </div>

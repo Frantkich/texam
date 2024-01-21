@@ -26,13 +26,13 @@ function function_activate_button(btn) {
 function fetch_exams(mode) {
     function_activate_button($(`#fetch_${mode}`));
     $.ajax({
-        url: `fetch/${mode}`,
+        url: `${document.location.pathname}/fetch/${mode}`,
         type: "UPDATE",
         success: (data) => {
             if (data.length) {
                 $("#itemList").empty();
                 data.forEach((exam) => {
-                    $("#itemList").append(`<a href="${ exam.name }"><li class="list-group-item">${ exam.name }</li></a>`);
+                    $("#itemList").append(`<a href="${document.location.pathname}/${ exam.name }"><li class="list-group-item">${ exam.name }</li></a>`);
                 });
             } else {
                 alert("Error: " + data.message);
