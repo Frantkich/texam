@@ -4,3 +4,4 @@ flask_login
 pymysql
 requests
 bs4
+gunicorn

@@ -11,6 +11,12 @@ GRANT ALL PRIVILEGES ON texam.* TO syncordian;
 FLUSH PRIVILEGES;
 ```
 
-run `> pip install -r requirements.txt`
+run `> venv/bin/pip install -r requirements.txt`
 
-run `> flask --app main:create_app run --reload --debug`
+run dev server
+
+run `> venv/bin/flask --app main:create_app run --reload --debug`
+
+run prod server
+
+run `> venv/bin/gunicorn -w 2 'main:app'`
