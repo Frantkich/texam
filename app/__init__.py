@@ -12,6 +12,7 @@ def create_app(config_name="config") -> Flask:
         __name__,
         static_folder=configs[config_name].STATIC_FOLDER,
         template_folder=configs[config_name].TEMPLATE_FOLDER,
+        static_url_path=f'/{configs[config_name].PROJECT_NAME}/static'
     )
     app.config.from_object(configs[config_name])
     login_manager.init_app(app)
