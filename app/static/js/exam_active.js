@@ -41,7 +41,7 @@ $("#submit_delay").on("click", function () {
     }
 });
 
-$("#answer").on("click", function () {
+$("#saveAnswers").on("click", function () {
     if (window.confirm("Your answers will be saved and submit to TLC, do you want to proceed ?")) {
         $(this).prop("disabled", true);
         $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);

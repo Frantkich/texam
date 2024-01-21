@@ -22,7 +22,7 @@ $("#startExam").on("click", function () {
             type: "POST",
             success: (data) => {
                 if (data.status == "success") {
-                    location.href = "active";
+                    location.href = `${get_base_url()}/exams/active`;
                 }
             },
             error: (data) => {

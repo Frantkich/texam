@@ -8,9 +8,9 @@
 
 {% block content %}
 <div class="container">
-    <h3 id="examName" class="mb-3" value="{{ exam.name }}">Active Exam - {{ exam.name }}</h3>
+    <h3 class="mb-3">Active Exam - <span id="examName">{{ exam.name }}</span></h3>
     <div class="buttonRow">
-        <button id="answer" class="btn btn-primary btn-spinner" type="button"><span role="status">Answering exam's questions</span></button>
+        <button id="saveAnswers" class="btn btn-primary btn-spinner" type="button"><span role="status">Answering exam's questions</span></button>
         <div class="btn-group" role="group">
             <button id="submit" type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"><span role="status">Submit exam</span></button>
             <ul class="dropdown-menu">

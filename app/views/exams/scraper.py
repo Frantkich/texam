@@ -6,18 +6,7 @@ import bs4
 import multiprocessing
 import time
 
-from app.tools.db.methods import (
-    remove_exam_from_user, 
-    add_exam_questions, 
-    assign_exam_to_user, 
-    bind_question_to_user, 
-    get_question_in_exam,
-    update_result_stats,
-    update_result_questions,
-    create_result,
-    get_last_result,
-    get_last_exam_results,
-)
+import app.tools.db.methods as db_methods
 
 
 def new_tlc_session() -> Session:
@@ -55,26 +44,26 @@ def fetch_user_exams():
 
 
 def load_questions(name: str):
-    session, resp = open_exam(name)
+    session, resp = open_exam(db_methods.get_exams(name).code)
     if not resp: return False
     html:str = resp.content
     soup = bs4.BeautifulSoup(html, "html.parser")
     index_start_nb_questions = html.find(b"Question 1 of ")
     index_end_nb_questions = html.find(b"\n", index_start_nb_questions + 1)
     nb_questions = int(html[index_start_nb_questions + 13:index_end_nb_questions])
-    assign_exam_to_user(name)
-    create_result()
+    db_methods.assign_exam_to_user(name)
+    db_methods.create_result()
     for _ in range(nb_questions):
         question_text = soup.find(id="questiontext").text
-        question = get_question_in_exam(current_user.exam_id, question_text)
+        question = db_methods.get_question_in_exam(current_user.exam_id, question_text)
         if question:
-            bind_question_to_user(question)
+            db_methods.bind_question_to_user(question)
         else:
-            exam = add_exam_questions(name, [{
+            exam = db_methods.add_exam_questions(name, [{
                 "description": question_text,
                 "answers": [{"description": tr.find_all("td")[-1].text} for tr in soup.find_all("tr")[1:]]
             }])
-            bind_question_to_user(exam.questions[-1])
+            db_methods.bind_question_to_user(exam.questions[-1])
         response = session.post(current_app.config["TLCEXAM_URL"] + "/display_question", data={"cmd": "", "next_ques": "Next>"})
         soup = bs4.BeautifulSoup(response.content, "html.parser")
     return True
@@ -90,7 +79,7 @@ def answering_questions() -> str:
     questions_processed = []
     for _ in range(nb_questions):
         question_text = soup.find(id="questiontext").text
-        question = get_question_in_exam(current_user.exam_id, question_text)
+        question = db_methods.get_question_in_exam(current_user.exam_id, question_text)
         if not question: return 500 # LA QUESTION NE S'EST PAS BIEN ENREGISTREE
         question_processed = {
             "question" : {
@@ -122,7 +111,7 @@ def answering_questions() -> str:
         # ON ENVOIE LA REPONSE
         response = session.post(current_app.config["TLCEXAM_URL"] + "/display_question", data=data)
         soup = bs4.BeautifulSoup(response.content, "html.parser")
-    update_result_questions(get_last_exam_results(), questions_processed)
+    db_methods.update_result_questions(db_methods.get_last_exam_results(), questions_processed)
     return generate_report(session)
 
 
@@ -181,8 +170,8 @@ def submit_exam():
             "score": columns[2].text
         })
     session.get(current_app.config["TLCEXAM_URL"] + "/summary_list?exit_page=1")
-    result = update_result_stats(get_last_result(), success, score, detail_score, ended=True)
-    remove_exam_from_user()
+    result = db_methods.update_result_stats(db_methods.get_last_result(), success, score, detail_score, ended=True)
+    db_methods.remove_exam_from_user()
     return result
 
 
