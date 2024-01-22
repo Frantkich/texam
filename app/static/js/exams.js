@@ -1,7 +1,7 @@
 "use strict";
 console.log('exams_index.js loaded');
 
-import { custom_alert, get_base_url } from './script.js';
+import { custom_alert, get_base_url, toggle_button_loading } from './script.js';
 
 $("#searchInput").val("");
 
@@ -13,18 +13,9 @@ $("#searchInput").on("input", function() {
     }).hide();
 });
 
-function function_activate_button(btn) {
-    if (btn.prop("disabled")) {
-        btn.prop("disabled", false);
-        btn.find(".spinner").remove();
-    } else {
-        btn.prop("disabled", true);
-        btn.html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${btn.text()}`);
-    }
-}
 
 function fetch_exams(mode) {
-    function_activate_button($(`#fetch_${mode}`));
+    toggle_button_loading($(`#fetch_${mode}`));
     $.ajax({
         url: `${get_base_url()}/exams/fetch/${mode}`,
         type: "UPDATE",
@@ -43,7 +34,7 @@ function fetch_exams(mode) {
             custom_alert(data.responseJSON);
         },
         complete: (data) => {
-            function_activate_button($(`#fetch_${mode}`));
+            toggle_button_loading($(`#fetch_${mode}`));
         }
     });
 }

@@ -1,7 +1,7 @@
 "use strict";
 console.log('save_answers_export.js loaded');
 
-import { custom_alert, get_base_url } from './script.js';
+import { custom_alert, get_base_url, toggle_button_loading } from './script.js';
 
 export { saveAnswers };
 
@@ -36,8 +36,7 @@ function saveAnswers() {
         dataType: "json",
         complete: (data) => {        
             custom_alert(data.responseJSON)
-            $("#saveAnswers").prop("disabled", false);
-            $("#saveAnswers .spinner").remove();
+            toggle_button_loading($("#saveAnswers"));
         }
     });
 }

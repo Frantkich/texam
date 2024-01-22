@@ -24,11 +24,11 @@
         </div>
     </div>
     <div class="d-ruby">
-        <button id="startExam" class="btn btn-primary btn-spinner" type="button"><span role="status">Start exam</span></button>
+        <button id="startExam" class="btn btn-primary btn-spinner" type="button">Start exam</button>
         {% if exam.questions | count != 0 %}
         <button id="questionList" class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
         {% endif %}
-        <button id="saveAnswers" class="btn btn-warning btn-spinner collapse multi-collapse" type="button"><span role="status">Save questions's answers</span></button>
+        <button id="saveAnswers" class="btn btn-warning btn-spinner collapse multi-collapse" type="button"><i class="bi bi-floppy"></i></button>
         <div id="liveAlert"></div>
     </div>
     {% include "base/questions_list.html" %}

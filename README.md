@@ -13,9 +13,11 @@ FLUSH PRIVILEGES;
 
 run `> venv/bin/pip install -r requirements.txt`
 
-run dev server
+## run dev server
 
-run `> venv/bin/flask --app main:create_app run --reload --debug`
+You might need to change the db address > app\tools\config.py
+
+run `> <PATH TO FLASK> --app main:create_app run --reload --debug`
 
 run prod server
 

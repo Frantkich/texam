@@ -1,7 +1,7 @@
 "use strict";
 console.log('script.js loaded');
 
-export { custom_alert, get_base_url };
+export { custom_alert, get_base_url, toggle_button_loading };
 
 
 function custom_alert(resp, timeout=2000) {
@@ -26,4 +26,14 @@ function custom_alert(resp, timeout=2000) {
 
 function get_base_url() {
     return window.location.origin + $("html base").attr("href");
+}
+
+function toggle_button_loading(btn) {
+    if (btn.prop("disabled")) {
+        btn.prop("disabled", false);
+        btn.find(".spinner").remove();
+    } else {
+        btn.prop("disabled", true);
+        btn.prepend($("<span>").addClass("spinner spinner-border spinner-border-sm me-2").attr("aria-hidden", "true"));
+    }
 }

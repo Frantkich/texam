@@ -6,19 +6,15 @@ $(".answerScore").on("input", function() {
     if ($(this).val() == 2 || $(this).val() == 3) {
         let no_occ = 0;
         $(this).parent().parent().parent().parent().parent().find("li").each((index, li) => {
-            if ($(li).find(".answerScore").val() == $(this).val()) {
-                no_occ += 1;
-                if (no_occ > 1) {
-                    alert(`You can't have two answers "${$(this).find("option:selected").text()}" !`);
-                    $(li).find(".answerScore").val(null);
-                }
+            if ($(li).find(".answerScore").val() == $(this).val() && $(li).find(".answerScore") != $(this)) {
+                alert(`You can't have two answers "${$(this).find("option:selected").text()}" !`);
+                $(li).find(".answerScore").val(null);
             }
         });
     }
     if ($(this).val() == 3) {
         let remarks = $("#remarks_"+$(this).attr("id"))
         if ( remarks.val() == "" ) {
-            alert("Don't forget to add remarks to justify yourself!");
             remarks.prev().find(".bi-chevron-bar-down").click();
         }
     }
@@ -46,14 +42,14 @@ function selectSelections() {
 selectSelections();
 
 
-function uncollapseRemarks() {
+function uncollapseRemarks_if_not_null() {
     $(".answerRemarks").each((index, answerRemarks) => {
         if ($(answerRemarks).val().trim() != "") {
             $(answerRemarks).prev().find(".bi-chevron-bar-down").click();
         }
     });
 }
-uncollapseRemarks();
+uncollapseRemarks_if_not_null();
 
 function uncollapseQuestions() {
     $(".question").each((index, question) => {
@@ -68,8 +64,3 @@ function uncollapseQuestions() {
     });
 }
 uncollapseQuestions();
-
-// $("#questionList").on("click", function() {
-//     selectSelections();
-//     uncollapseRemarks();
-// }

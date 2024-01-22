@@ -1,22 +1,22 @@
 "use strict";
 console.log('exam.js loaded');
 
-import { custom_alert, get_base_url } from './script.js';
+import { custom_alert, get_base_url, toggle_button_loading } from './script.js';
 import { saveAnswers } from './save_answers_export.js';
 
 /**
  * Event handler for the "Save Answers" button click.
  * Collects the answers from the questions on the page and sends them to the server.
  */
-$("#saveAnswers").on("click", () => {
+$("#saveAnswers").on("click", function() {
+    toggle_button_loading($(this));
     saveAnswers();
 });
 
 $("#startExam").on("click", function () {
     let exam_name = $("#examName").text().trim();
     if (window.confirm("Are you sure ?")) {
-        $(this).prop("disabled", true);
-        $(this).html(`<span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${$(this).text()}`);
+        toggle_button_loading($(this));
         $.ajax({
             url: `${get_base_url()}/exams/start/${exam_name}`,
             type: "POST",
@@ -27,8 +27,7 @@ $("#startExam").on("click", function () {
             },
             error: (data) => {
                 custom_alert(data.responseJSON);
-                $(this).prop("disabled", false);
-                $(this).find(".spinner").remove();
+                toggle_button_loading($(this));
             },
         });
     }
