@@ -7,7 +7,7 @@ import { saveAnswers } from './save_answers_export.js';
 
 function sendAnswers() {
     return $.ajax({
-        url: `${get_base_url()}/XXXXexams/active/submit/answers`,
+        url: `${get_base_url()}/exams/active/submit/answers`,
         type: "POST",
         complete: (data) => {
             toggle_button_loading($("#sendAnswers"));
@@ -40,7 +40,7 @@ $("#submit_now").on("click", function() {
         saveAnswers().then( () => {
             sendAnswers().then( () => {
                 $.ajax({
-                    url: `${get_base_url()}/XXXXexams/active/submit/exam`,
+                    url: `${get_base_url()}/exams/active/submit/exam`,
                     type: "POST",
                     success: (data) => {
                         window.location.href = `texam/results/${data.result_id}`;
@@ -65,7 +65,7 @@ $("#submit_delay").on("click", function () {
         saveAnswers().then( () => {
             sendAnswers().then( () => {
                 $.ajax({
-                    url: `${get_base_url()}/XXXXexams/active/submit/exam/${$("#submit_delay_count").val()}`,
+                    url: `${get_base_url()}/exams/active/submit/exam/${$("#submit_delay_count").val()}`,
                     type: "POST",
                     complete: (data) => {
                         custom_alert(data.responseJSON);
@@ -76,3 +76,9 @@ $("#submit_delay").on("click", function () {
         });
     }
 });
+
+// uncollapse question list by default 
+function uncollapseQuestionList() {
+    $("#questions").toggle("collapse multi-collapse");
+}
+uncollapseQuestionList();

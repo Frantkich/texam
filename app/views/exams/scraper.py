@@ -160,7 +160,7 @@ def submit_exam():
     soup = bs4.BeautifulSoup(resp.content, "html.parser")
     infos = soup.find_all(class_="metainforight")
     score = infos[0].text[13:].split(" ")[0],
-    success = 0 if infos[1].text == "Failed" else 1
+    success = 1 if infos[1].text == "Passed" else 0
     detail_score = []
     for row in soup.find_all('tr')[1:]:
         columns = row.find_all('td')
