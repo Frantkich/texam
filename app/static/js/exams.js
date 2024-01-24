@@ -47,3 +47,17 @@ $("#fetch_all").on("click", () => {
 });
 
 fetch_exams("user");
+
+
+$( "#jf_horse" ).animate({marginLeft: "150%"}, 4000 );
+$( "#jf_speed" ).animate({marginLeft: "150%"}, 4000 );
+
+function AnimateRotate(d){
+    var elem = $("#jf_horse");
+    $({deg: 0}).animate({deg: d}, {
+        duration: 150,
+        step: function(now){ elem.css({transform: "rotate(" + now + "deg)"})},
+        complete: function(){AnimateRotate(d*-1)}
+    });
+}
+AnimateRotate(10);

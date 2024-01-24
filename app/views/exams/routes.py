@@ -41,6 +41,9 @@ def fetch_exams(mode:str = "all"):
 @routes.route("/<exam_name>")
 @login_required
 def exam(exam_name: str):
+    """
+    View function for displaying an exam.
+    """
     exam = db_methods.get_exams(exam_name)
     if not exam:
         return abort(404)
@@ -55,6 +58,9 @@ def exam(exam_name: str):
 @routes.route("/answers/save", methods=["UPDATE"])
 @login_required
 def answers_save():
+    """
+    View function for saving exam answers.
+    """
     examData = json.loads(request.data)
     if db_methods.update_exam_questions(examData["name"], examData["questions"]):
         return return_success("Answers saved.")
@@ -64,6 +70,9 @@ def answers_save():
 @routes.route("/start/<exam_name>", methods=["POST"])
 @login_required
 def start_exam(exam_name):
+    """
+    View function for starting an exam.
+    """
     if not current_user.exam:
         if scraper.load_questions(exam_name):
             return return_success("Exam started")
@@ -74,6 +83,9 @@ def start_exam(exam_name):
 @routes.route("/active", methods=["GET"])
 @login_required
 def active_exam():
+    """
+    View function for displaying the active exam.
+    """
     if not current_user.exam: return abort(404)
     exam = type('obj', (object,), {
         'name' : current_user.exam.name,
@@ -86,6 +98,9 @@ def active_exam():
 @routes.route("/active/submit/answers", methods=["POST"])
 @login_required
 def answers_submit():
+    """
+    View function for submitting exam answers.
+    """
     if not current_user.exam: return return_error(404, "No exam started.")
     report = scraper.answering_questions()
     if not report: return return_error(500, "Error answering exam's questions.")
@@ -96,6 +111,9 @@ def answers_submit():
 @routes.route("/active/submit/exam/<delay>", methods=["POST"])
 @login_required
 def submit_exam(delay:str = None):
+    """
+    View function for submitting the exam.
+    """
     if not current_user.exam: return return_error(404, "No exam started.")
     if delay:
         time = scraper.submit_exam_delay(delay)
