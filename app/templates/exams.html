@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/exams.css') }}">
+{% endblock %}
+
+{% block title %}All Exams{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3 d-ruby">
+                <button id="fetch_user" class="exams_fech_btn btn btn-primary btn-spinner" type="button">Fetch available exams</button>
+                <button id="fetch_all" class="exams_fech_btn btn btn-danger btn-spinner" type="button">Fetch every exams</button>
+                <div id="liveAlert"></div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <ul id="itemList" class="list-group">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/exams.js') }}"></script>
+{% endblock %}

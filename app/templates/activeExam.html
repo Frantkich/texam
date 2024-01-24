@@ -1,0 +1,38 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/examActive.css') }}">
+{% endblock %}
+
+{% block title %}Active Exam{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3 class="mb-3">Active Exam - <span id="examName">{{ exam.name }}</span></h3>
+    <div class="buttonRow">
+        <button id="saveAnswers" class="btn btn-warning btn-spinner" type="button"><i class="bi bi-floppy"></i></button>
+        <button id="sendAnswers" class="btn btn-primary btn-spinner" type="button">Send answers to TLC</button>
+        <div class="btn-group" role="group">
+            <button id="submit" type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown">Send answers to TLC and finish</button>
+            <ul class="dropdown-menu">
+                <li class="mb-2">
+                    <button id="submit_now" class="btn btn-danger" type="button">Finish now</button>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <button id="submit_delay" class="btn btn-danger" type="button">Finish when</button>
+                        <input id="submit_delay_count" type="number" class="form-control" size="4" max="20" value="5">
+                        <div class="input-group-text">min. remaining</div>
+                    </div>
+                </li>
+            </ul>
+            <div id="liveAlert"></div>
+        </div>
+    </div>
+    {% include "base/questions_list.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/exam_active.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+{% endblock %}
+
+{% block title %}You Results{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Exam</th>
+                <th scope="col">Date</th>
+                <th scope="col">Results</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            {% if result.ended %}
+            <tr data-href="{{result.id}}">
+                <td>{{ result.exam.long_name }}</td>
+                <td>{{ result.date }}</td>
+                {% if result.success %}
+                    <td>Success</td>
+                {% else %}
+                    <td>Fail</td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

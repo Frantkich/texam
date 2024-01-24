@@ -1,0 +1,16 @@
+{% extends "base/base.html" %}
+
+{% block title %}All Exams{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="POST">
+        <input type="text" name="search_string" class="form-control" placeholder="Search..." value="{{search_string}}">
+    </form>
+    {% include "base/questions_list.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/questions.js') }}"></script>
+{% endblock %}

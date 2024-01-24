@@ -4,6 +4,24 @@
 
 {% block content %}
 
-<h1>Hey {{ current_user.id }}</h1>
+<div class="container">
+    <h1>CTR "Hello {{ current_user.email.split("@")[0][0].upper() }}.{{ current_user.email.split("@")[0][1:].capitalize()}}"</h1>
 
+    <div class="mt-5 d-flex">
+        <i class="bi bi-person"></i>
+        <p class="ms-2 mb-0"><b>Anonymous</b></p>
+    </div>
+    <p>> regles d'utilisation d'un logiciel de triche d'exams</p>
+    
+    <div class="mt-3 d-flex">
+        <i class="bi bi-chat-dots "></i>
+        <p class="ms-2 mb-0"><b>ChatGPT</b></p>
+    </div>
+    <p>Je ne peux pas soutenir, fournir ou encourager l'utilisation de logiciels de triche pour les examens. L'utilisation de tels logiciels va à l'encontre de l'éthique académique et peut avoir des conséquences sérieuses sur votre éducation et votre avenir professionnel. Il est essentiel de respecter les règles et les normes établies par votre établissement scolaire ou universitaire.</p> 
+    <p>Si vous rencontrez des difficultés dans vos études ou si vous avez des préoccupations concernant vos examens, il est recommandé de parler à un responsable pour obtenir de l'aide et des conseils légitimes sur la manière de progresser de manière éthique dans votre parcours éducatif.</p>
+
+    <h2>How to use Texam ?</h2>
+    You can navigate with the top navbar. There you will "Exams", this button will redirect you to the exams page. You can also click on the "Chat" button to access the chat page where all exams are listed.
+    On the exams page you can search for an exam, click on the one you want to display the details and click on the "Start" button to start the exam. You will be redirected to the exam page where you will be able to see the questions and answer them. Once you have finished the exam, you can click on the "Submit" button to submit your answers. You will be redirected to the results page where you will be able to see your score and the correct answers.
+</div>
 {% endblock %}

@@ -1,3 +1,7 @@
 Flask
-pymongo[srv]
-Flask-PyMongo
+Flask-SQLAlchemy
+flask_login
+pymysql
+requests
+bs4
+gunicorn

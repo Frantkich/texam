@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+
+{% block title %}{{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3 id="examName">{{ exam.name }}</h3>
+    <div class="card mt-2 mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Statistics</h5>
+            <p class="card-text">Exam:</p>
+            <ul class="list-group">
+                <li class="list-group-item">Full name: {{ exam.long_name }}</li>
+                <li class="list-group-item">Description: {{ exam.description }}</li>
+                <li class="list-group-item d-flex">Code: {{ exam.code }}</li>
+                <li class="list-group-item">Class: {{ exam.class_name }}</li>
+                <li class="list-group-item">Nb questions registered: {{ exam.questions | count }}</li>
+            </ul>
+            <p class="card-text mt-3">Tries:</p>
+            <ul class="list-group mt-3">
+                <li class="list-group-item">Pass: {{ stats.passed }}</li>
+                <li class="list-group-item">Failed: {{ stats.failed }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="d-ruby">
+        <button id="startExam" class="btn btn-primary btn-spinner" type="button">Start exam</button>
+        {% if exam.questions | count != 0 %}
+        <button id="questionList" class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="saveAnswers questions">Question List</button>
+        {% endif %}
+        <button id="saveAnswers" class="btn btn-warning btn-spinner collapse multi-collapse" type="button"><i class="bi bi-floppy"></i></button>
+        <div id="liveAlert"></div>
+    </div>
+    {% include "base/questions_list.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/exam.js') }}"></script>
+{% endblock %}

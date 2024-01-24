@@ -2,14 +2,16 @@ import os
 
 
 class Config(object):
-    SECRET_KEY = "soumia_bagnicong_de_la_keifuern"
+    PROJECT_NAME = "texam"
+    SQL_DATABASE = PROJECT_NAME
+    SECRET = "tlcsucks"
+    SECRET_KEY = "El_Christ_bagnicong_de_la_keifuern"
+    TLCEXAM_URL = "https://tlcexams.temenos.com/partner"
     TEMPLATE_FOLDER = os.getcwd() + "/app/templates"
     STATIC_FOLDER = os.getcwd() + "/app/static"
-    MONGO_USERNAME = "username"
-    MONGO_PASSWORD = "password"
-    MONGO_HOST = "frantkich.fr"
-    MONGO_COLLECTION = "collectionX"
-    MONGO_URI = (f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_HOST}/{MONGO_COLLECTION}")
+    SQL_USERNAME = "syncordian"
+    SQL_HOST = "localhost"
+    SQLALCHEMY_DATABASE_URI = (f"mysql://{SQL_USERNAME}@{SQL_HOST}:3306/{SQL_DATABASE}")
 
 
-configs = {"dev": Config}
+configs = {"config": Config}
