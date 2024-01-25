@@ -49,8 +49,8 @@ $("#fetch_all").on("click", () => {
 fetch_exams("user");
 
 
-$( "#jf_horse" ).animate({marginLeft: "150%"}, 4000 );
-$( "#jf_speed" ).animate({marginLeft: "150%"}, 4000 );
+$( "#jf_horse" ).animate({marginLeft: "150%"}, 8000 );
+$( "#jf_speed" ).animate({marginLeft: "150%"}, 8000 );
 
 function AnimateRotate(d){
     var elem = $("#jf_horse");
