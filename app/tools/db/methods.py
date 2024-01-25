@@ -82,22 +82,22 @@ def update_exam_questions(name:str, questions:dict) -> Exams:
     if not exam:
         return None
     for question in questions:
+        modified = False
         answer_db = None
         for answer in question["answers"]:
             answer_db:Answers = Answers.query.filter_by(id=answer["id"]).first()
             if answer_db:
-                answer_db.remarks = answer["remarks"]
+                if answer_db.remarks != answer["remarks"]:
+                    answer_db.remarks = answer["remarks"]
+                    modified = True
                 if "score" in answer:
-                    if not answer["score"]:
-                        answer_db.score = None
-                    elif answer["score"].isnumeric():
-                        answer_db.score = int(answer["score"])
-                    else:
-                        answer_db.score = None
+                    if answer_db.score != answer["score"]: modified = True
+                    if not answer["score"] or not answer["score"].isnumeric(): answer_db.score = None
+                    else: answer_db.score = int(answer["score"])
             else:
                 return None
-        question_db:Questions = Questions.query.filter_by(id=answer_db.question_id).first()
-        question_db.user_last_answer = current_user
+        if modified:
+            Questions.query.filter_by(id=answer_db.question_id).first().user_last_answer = current_user
     db_c.session.commit()
     return exam
 
