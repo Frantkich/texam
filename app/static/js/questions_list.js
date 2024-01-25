@@ -3,14 +3,17 @@ console.log('questions_list.js loaded');
 
 
 $(".answerScore").on("input", function() {
-    if ($(this).val() == 2 || $(this).val() == 3) {
+    if ($(this).val() > 1) {
         let no_occ = 0;
         $(this).parent().parent().parent().parent().parent().find("li").each((index, li) => {
-            if ($(li).find(".answerScore").val() == $(this).val() && $(li).find(".answerScore") != $(this)) {
-                alert(`You can't have two answers "${$(this).find("option:selected").text()}" !`);
-                $(li).find(".answerScore").val(null);
+            if ($(li).find(".answerScore").val() > 1) {
+                no_occ += 1;
             }
         });
+        if ( no_occ > 1 ) {
+            alert("You can't have two answers with this degree of certitude !");
+            $(this).val(null);
+        }
     }
     if ($(this).val() == 3) {
         let remarks = $("#remarks_"+$(this).attr("id"))

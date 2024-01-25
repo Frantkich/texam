@@ -48,6 +48,7 @@ def create_exam(name:str, code:str, long_name:str, description:str, class_name:s
     db_c.session.commit()
     return exam
 
+
 def update_exam(exams) -> Exams:
     for exam in exams:
         existing_exam = get_exams(exam["name"])
