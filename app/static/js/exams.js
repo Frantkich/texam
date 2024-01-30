@@ -5,12 +5,15 @@ import { custom_alert, get_base_url, toggle_button_loading } from './script.js';
 
 $("#searchInput").val("");
 
+function filter_exams(search_string) {
+    $("#itemList li").filter(function() {
+        return $(this).text().toLowerCase().indexOf(search_string.toLowerCase()) === -1;
+    }).hide();
+}
+
 $("#searchInput").on("input", function() {
     $("#itemList li").show();
-    var selected = $(this).val();
-    $("#itemList li").filter(function() {
-        return $(this).text().toLowerCase().indexOf(selected.toLowerCase()) === -1;
-    }).hide();
+    filter_exams($(this).val());
 });
 
 
@@ -25,6 +28,7 @@ function fetch_exams(mode) {
                 data.forEach((exam) => {
                     $("#itemList").append(`<a href="${document.location.pathname}/${ exam.name }"><li class="list-group-item">${ exam.name }</li></a>`);
                 });
+                filter_exams($("#searchInput").val());
             } else {
                 alert("Error: " + data.message);
             }
