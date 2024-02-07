@@ -1,4 +1,5 @@
 from flask import Response
+from flask_login import current_user
 import json
 
 
@@ -39,3 +40,13 @@ def return_success(msg: str = "") -> Response:
         Response: Flask Response object with an success message.
     """
     return Response(json.dumps({"status": "success", "message": msg}), 200, content_type="application/json")
+
+
+def user_is_admin() -> bool:
+    """
+    Checks if the current user is an admin.
+
+    Returns:
+        bool: True if the current user is an admin, False otherwise.
+    """
+    return current_user.role == 1 

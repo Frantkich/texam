@@ -17,6 +17,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.results.index') }}">Results</a>
                     </li>
+                    {% if current_user.is_authenticated and current_user.role == 1 %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.admin.index') }}">Admin</a>
+                    </li>
+                    {% endif %}
                     {% if current_user.exam %}
                     <a class="nav-link" href="{{ url_for('main.exams.active_exam') }}"><b>Active Exam</b></a>
                     {% endif %}
@@ -24,11 +29,11 @@
                 <div class="d-flex">
                     {% if not current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.log.login') }}"><b>Connect</b></a>
+                        <a class="nav-link" href="{{ url_for('main.user.login') }}"><b>Connect</b></a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.log.logout') }}">Disconnect</a>
+                        <a class="nav-link" href="{{ url_for('main.user.logout') }}">Disconnect</a>
                     </li>
                     {% endif %}
                 </div>

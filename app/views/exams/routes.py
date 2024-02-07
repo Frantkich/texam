@@ -22,19 +22,14 @@ def index():
 @routes.route("/fetch/<mode>", methods=["UPDATE"])
 @login_required
 def fetch_exams(mode:str = "all"):
-    if mode == "all":
-        exams = db_methods.get_exams()
-        exams = [{
-            "code": exam.code,
-            "name": exam.name,
-            "long_name": exam.long_name,
-            "description": exam.description,
-            "class_name": exam.class_name
-        } for exam in exams]
-    elif mode == "user":
-        exams = scraper.fetch_user_exams()
-        if not exams: return return_error(500, "Error fetching exams.")
-        db_methods.update_exam(exams)
+    if mode == "all":    exams = db_methods.get_exams()
+    elif mode == "user": exams = scraper.fetch_user_exams()
+    if not exams: return return_error(500, "Error fetching exams.")
+    if current_user.role == "0": exams = [exam for exam in exams if exam.for_all]
+    exams = [{
+        "code": exam.code,
+        "name": exam.name
+    } for exam in exams]
     return return_data(exams)
 
 
@@ -123,3 +118,11 @@ def submit_exam(delay:str = None):
         result = scraper.submit_exam()
         if not result: return return_error(500, "Error submitting exam.")
         return return_data({"result_id": result.id})
+
+@routes.route("/for_all", methods=["UPDATE"])
+@login_required
+def is_exam_for_all():
+    examData = json.loads(request.data)
+    if db_methods.update_exam_for_all(examData):
+        return return_success("Exam updated.")
+    return return_error(500, "Error updating exam.")

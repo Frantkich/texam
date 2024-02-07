@@ -9,6 +9,7 @@
 {% block content %}
 <div class="container">
     <h3 class="mb-3">Active Exam - <span id="examName">{{ exam.name }}</span></h3>
+    <span id="user_role" hidden>{{ current_user.role }}</span>
     <div class="buttonRow">
         <button id="saveAnswers" class="btn btn-warning btn-spinner" type="button"><i class="bi bi-floppy"></i></button>
         <button id="sendAnswers" class="btn btn-primary btn-spinner" type="button">Send answers to TLC</button>

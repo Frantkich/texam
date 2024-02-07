@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user
 from app.tools.db.methods import get_user
 
 
-routes = Blueprint("log", __name__, url_prefix="")
+routes = Blueprint("user", __name__, url_prefix="")
 
 
 @routes.route("/login", methods=["GET", "POST"])

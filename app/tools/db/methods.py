@@ -50,15 +50,26 @@ def create_exam(name:str, code:str, long_name:str, description:str, class_name:s
 
 
 def update_exam(exams) -> Exams:
+    updated_db_exams = []
     for exam in exams:
         existing_exam = get_exams(exam["name"])
         if not existing_exam:
-            create_exam(exam["name"], exam["long_name"], exam["code"], exam["description"], exam["class_name"])
+            existing_exam = create_exam(exam["name"], exam["long_name"], exam["code"], exam["description"], exam["class_name"])
         elif existing_exam.code != exam["code"]:
             existing_exam.long_name = exam["long_name"]
             existing_exam.code = exam["code"]
+        updated_db_exams.append(existing_exam)
     db_c.session.commit()
-    return exam
+    return updated_db_exams
+
+
+def update_exam_for_all(exams_data) -> Exams:
+    for exam in exams_data:
+        db_exam:Exams = get_exams(exam["name"])
+        if not db_exam: return None
+        db_exam.for_all = exam["for_all"]
+    db_c.session.commit()
+    return True
 
 # Questions
 def get_question_in_exam(exam_id, question_desc:str) -> Questions:

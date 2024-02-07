@@ -8,6 +8,7 @@ from sqlalchemy import (
     Text,
     DateTime,
     PickleType,
+    SmallInteger
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from flask_sqlalchemy import SQLAlchemy
@@ -35,10 +36,9 @@ class Users(UserMixin, db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
     email: Mapped[str]                  = mapped_column(String(255), unique=True)
     password: Mapped[str]               = mapped_column(String(255), nullable=False)
-    is_admin: Mapped[bool]              = mapped_column(Boolean, default=False)
+    role: Mapped[bool]                  = mapped_column(SmallInteger, default=False)
     exam_id: Mapped[int]                = mapped_column(ForeignKey("exams.id"), nullable=True)
     exam: Mapped["Exams"]               = relationship()
-
 
 class Exams(db_c.Model):
     id: Mapped[int]                     = mapped_column(Integer, primary_key=True)
@@ -47,6 +47,7 @@ class Exams(db_c.Model):
     code: Mapped[str]                   = mapped_column(String(255), unique=True)
     class_name: Mapped[str]             = mapped_column(String(255))
     description: Mapped[str]            = mapped_column(String(2042))
+    for_all: Mapped[bool]               = mapped_column(Boolean, default=False)
     questions: Mapped[List["Questions"]]= relationship(cascade="all, delete-orphan")
 
 

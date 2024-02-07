@@ -40,7 +40,7 @@ def fetch_user_exams():
             "description": col[2].text,
             "class_name": col[3].text
         })
-    return exams
+    return db_methods.update_exam(exams)
 
 
 def load_questions(name: str):

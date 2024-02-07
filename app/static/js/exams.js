@@ -26,7 +26,7 @@ function fetch_exams(mode) {
             if (data.length) {
                 $("#itemList").empty();
                 data.forEach((exam) => {
-                    $("#itemList").append(`<a href="${document.location.pathname}/${ exam.name }"><li class="list-group-item">${ exam.name }</li></a>`);
+                    $("#itemList").append(`<a href="${document.location.pathname}${ exam.name }"><li class="list-group-item">${ exam.name }</li></a>`);
                 });
                 filter_exams($("#searchInput").val());
             } else {

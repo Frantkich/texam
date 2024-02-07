@@ -3,7 +3,6 @@
     "configurations": [
         {
             "name": "Python: Flask",
-            "type": "python",
             "request": "launch",
             "module": "flask",
             "env": {
