@@ -25,7 +25,7 @@ $("#fuck_archi").on("click", function() {
         }));
     });
     $.ajax({
-        url: `${get_base_url()}/exams/for_all`,
+        url: `${get_base_url()}/admin/for_all`,
         type: "UPDATE",
         data: JSON.stringify(exam_data),
         contentType: "application/json; charset=utf-8",
@@ -33,6 +33,35 @@ $("#fuck_archi").on("click", function() {
         complete: (data) => {        
             custom_alert(data.responseJSON)
             toggle_button_loading($("#fuck_archi"));
+        }
+    });
+});
+
+$("#createUser").on("click", function() {
+    toggle_button_loading($("#createUser"));
+    let role = 2;
+    switch ($("#role").val()) {
+        case "architect":
+            role = 0;
+            break;
+        case "admin":
+            role = 1;
+            break;
+    }
+    let user = Object({
+        email: $("#email").text(),
+        password: $("#password").text(),
+        role: role,
+    });
+    $.ajax({
+        url: `${get_base_url()}/admin/create_user`,
+        type: "POST",
+        data: JSON.stringify(user),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        complete: (data) => {        
+            custom_alert(data.responseJSON)
+            toggle_button_loading($("#createUser"));
         }
     });
 });

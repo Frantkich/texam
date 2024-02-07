@@ -118,11 +118,3 @@ def submit_exam(delay:str = None):
         result = scraper.submit_exam()
         if not result: return return_error(500, "Error submitting exam.")
         return return_data({"result_id": result.id})
-
-@routes.route("/for_all", methods=["UPDATE"])
-@login_required
-def is_exam_for_all():
-    examData = json.loads(request.data)
-    if db_methods.update_exam_for_all(examData):
-        return return_success("Exam updated.")
-    return return_error(500, "Error updating exam.")

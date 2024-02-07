@@ -33,6 +33,15 @@ def bind_question_to_user(question:Questions) -> Questions:
     db_c.session.commit()
     return question
 
+def create_user(user_data:dict) -> Users:
+    user:Users = Users(
+        email=user_data["email"],
+        password=user_data["password"],
+        role=user_data["role"],
+    )
+    db_c.session.add(user)
+    db_c.session.commit()
+    return user
 
 # Exams
 def get_exams(name:str=None) -> Exams:
