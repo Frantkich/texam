@@ -17,10 +17,10 @@ def login():
     if user and request.form["password"] == user.password:
         login_user(user)
         return redirect(url_for("main.frontend.index"))
-    return redirect(url_for("main.log.login"))
+    return redirect(url_for("main.user.login"))
 
 
 @routes.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("main.log.login"))
+    return redirect(url_for("main.user.login"))
