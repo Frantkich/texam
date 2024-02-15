@@ -5,6 +5,17 @@ import { custom_alert, get_base_url, toggle_button_loading } from './script.js';
 import { saveAnswers } from './save_answers_export.js';
 
 
+function review_archi() {
+    if ($("#user_role").text() == "0") {
+        $(".answerScore").each(function() {
+            let chance_to_let_user_learn_more_stuff = 0.8;
+            if ($(this).val() && Math.random() < chance_to_let_user_learn_more_stuff) {
+                $(this).val("")
+            }
+        });
+    }
+}
+review_archi();
 
 function vpn_errors() {
     let errors = [
@@ -111,14 +122,3 @@ function uncollapseQuestionList() {
 uncollapseQuestionList();
 
 
-function review_archi() {
-    if ($("#user_role").text() == "0") {
-        $(".answerScore").each(function() {
-            let chance_to_let_user_learn_more_stuff = 0.8;
-            if ($(this).val() && Math.random() < chance_to_let_user_learn_more_stuff) {
-                $(this).val("")
-            }
-        });
-    }
-}
-review_archi();

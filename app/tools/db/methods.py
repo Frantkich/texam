@@ -52,7 +52,7 @@ def get_exams(name:str=None) -> Exams:
 
 
 def create_exam(name:str, code:str, long_name:str, description:str, class_name:str) -> Exams:
-    exam:Exams = Exams(name=name, long_name=long_name, code=code, description=description, class_name=class_name)
+    exam:Exams = Exams(name=name, long_name=long_name, code=code, description=description, class_name=class_name, for_all=False)
     db_c.session.add(exam)
     db_c.session.commit()
     return exam
@@ -166,7 +166,7 @@ def get_last_result() -> Results:
 
 def get_user_results(id:int = None) -> Results:
     if not id:
-        return Results.query.filter_by(user_id=current_user.id).all()
+        return Results.query.filter_by(user_id=current_user.id).order_by(Results.date.desc()).all()
     else:
         return Results.query.filter_by(id=id).first_or_404()
 

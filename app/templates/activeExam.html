@@ -6,6 +6,10 @@
 
 {% block title %}Active Exam{% endblock %}
 
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/exam_active.js') }}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h3 class="mb-3">Active Exam - <span id="examName">{{ exam.name }}</span></h3>
@@ -32,8 +36,4 @@
     </div>
     {% include "base/questions_list.html" %}
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script type="module" src="{{ url_for('static', filename='js/exam_active.js') }}"></script>
 {% endblock %}
