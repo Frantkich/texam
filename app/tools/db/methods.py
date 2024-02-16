@@ -44,15 +44,15 @@ def create_user(user_data:dict) -> Users:
     return user
 
 # Exams
-def get_exams(name:str=None) -> Exams:
-    if not name:
-        return Exams.query.all()
-    else:
+def get_exams(name:str=None, code:str=None) -> Exams:
+    if code:
+        return Exams.query.filter_by(code=code).first()
+    if name:
         return Exams.query.filter_by(name=name).first()
-
+    return Exams.query.all()
 
 def create_exam(name:str, code:str, long_name:str, description:str, class_name:str) -> Exams:
-    exam:Exams = Exams(name=name, long_name=long_name, code=code, description=description, class_name=class_name, for_all=False)
+    exam:Exams = Exams(name=name, code=code, long_name=long_name, description=description, class_name=class_name, for_all=False)
     db_c.session.add(exam)
     db_c.session.commit()
     return exam
@@ -61,12 +61,15 @@ def create_exam(name:str, code:str, long_name:str, description:str, class_name:s
 def update_exam(exams) -> Exams:
     updated_db_exams = []
     for exam in exams:
-        existing_exam = get_exams(exam["name"])
+        existing_exam = get_exams(code=exam["code"])
         if not existing_exam:
-            existing_exam = create_exam(exam["name"], exam["long_name"], exam["code"], exam["description"], exam["class_name"])
-        elif existing_exam.code != exam["code"]:
+            existing_exam = get_exams(name=exam["name"])
+        if not existing_exam:
+            existing_exam = create_exam(name=exam["name"], code=exam["code"], long_name=exam["long_name"], description=exam["description"], class_name=exam["class_name"])
+        elif existing_exam.code != exam["code"] or existing_exam.long_name != exam["long_name"]:
             existing_exam.long_name = exam["long_name"]
             existing_exam.code = exam["code"]
+            existing_exam.code = exam["name"]
         updated_db_exams.append(existing_exam)
     db_c.session.commit()
     return updated_db_exams
