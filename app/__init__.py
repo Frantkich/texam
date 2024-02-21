@@ -52,6 +52,6 @@ def user_loader(id):
 
 def minimal_dump(session):
     session.add(Users(email='fguern@syncordisconsulting.com', password='Syncordis0609', role=1))
-    users = [["jconnetable@syncordisconsulting.com", "TLC2020"],["cherson@syncordisconsulting.com", "TLC2018"],["tnguyencong@syncordisconsulting.com", "TLC@2017"],["ffranchet@syncordisconsulting.com", "TLC2020"],["jkaiffer@syncordisconsulting.com", "TLC2017"],["cguidicelli@syncordisconsulting.com", "TLC2020"],["echamlong@syncordisconsulting.com", "Lenacelia23!"],["pbagnis@syncordisconsulting.com",  "#Mog:mq+1uYY"],["afreiria@syncordisconsulting.com",  "Syncordis@2017"],["lsimosimo@syncordisconsulting.com",  "3Bandjounaise!"],["amoquin@syncordisconsulting.com", "TLC2020"]]
+    users = [["tnguyencong@syncordisconsulting.com", "TLC@2017"],["jkaiffer@syncordisconsulting.com", "TLC2017"],["pbagnis@syncordisconsulting.com",  "#Mog:mq+1uYY"],["amoquin@syncordisconsulting.com", "TLC2020"]]
     session.commit()
     print("Admin user created.")
