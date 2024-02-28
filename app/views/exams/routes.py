@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request, abort, redirect, url_for
 from flask_login import login_required, current_user
 import json
 
@@ -72,7 +72,7 @@ def start_exam(exam_name):
         if scraper.load_questions(exam_name):
             return return_success("Exam started")
         return return_error(400, "Error passing exam. (Maybe you already passed it?)")
-    return return_error(400, "Exam already started.")
+    return return_error(400, "An exam is already started.")
 
 
 @routes.route("/active", methods=["GET"])
@@ -88,6 +88,19 @@ def active_exam():
         'questions' : [question for question in current_user.exam.questions if current_user in question.active_for]
     })
     return render_template("activeExam.html", exam=exam)
+
+
+
+@routes.route("/active/giveup", methods=["POST"])
+@login_required
+def giveup_exam():
+    """
+    View function to give up an exam.
+    """
+    if current_user.exam:
+        db_methods.remove_exam_from_user()
+        return_data("Exam given up.")
+    return return_error(400, "No exam active exam.")
 
 
 @routes.route("/active/submit/answers", methods=["POST"])

@@ -50,6 +50,23 @@ function sendAnswers() {
     });
 }
 
+$("#giveup").on("click", function() {
+    if (window.confirm("Are you sure you want to give up ?")) {
+        toggle_button_loading($(this));
+        $.ajax({
+            url: `${get_base_url()}/exams/active/giveup`,
+            type: "POST",
+            success: () => {
+                window.location.href = `texam/exams`;
+            },
+            error: (data) => {
+                custom_alert(data.responseJSON);
+                toggle_button_loading($(this));
+            }
+        });
+    }
+});
+
 $("#saveAnswers").on("click", function() {
     toggle_button_loading($(this));
     if ($("#user_role").text() == "0") { vpn_errors(); return; }
@@ -120,5 +137,4 @@ function uncollapseQuestionList() {
     $("#questions").toggle("collapse multi-collapse");
 }
 uncollapseQuestionList();
-
 

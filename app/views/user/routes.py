@@ -10,14 +10,20 @@ routes = Blueprint("user", __name__, url_prefix="")
 
 @routes.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET": return render_template("login.html")
+    code = None
+    if request.method == "GET": return render_template("login.html", code=code)
     if request.form["secret"] == "wubbalubbadubdub": return render_template("wubbalubbadubdub.html")
-    if request.form["secret"] != current_app.config["SECRET"] : return render_template("theonlyhtmlfile.html")
     user = get_user(request.form["email"])
     if user and request.form["password"] == user.password:
+        if request.form["secret"] != current_app.config["SECRET"] : return render_template("theonlyhtmlfile.html")
         login_user(user)
         return redirect(url_for("main.frontend.index"))
-    return redirect(url_for("main.user.login"))
+    else:
+        code = {
+            "error": "error",
+            "message": "Invalid email or password"
+        }
+        return render_template("login.html", code=code)
 
 
 @routes.route("/logout")

@@ -11,7 +11,7 @@ function custom_alert(resp, timeout=2000) {
         resp_status = "danger";
         resp_message = "Something went wrong, please try again later.";
     } else {
-        resp_status = resp.status;
+        resp_status = resp.error;
         resp_message = resp.message;
     }
     if (resp_status == "error") {  resp_status = "danger" }

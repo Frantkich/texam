@@ -26,10 +26,20 @@
                         </div>
                         <button type="submit" class="btn btn-primary mt-2">Submit</button>
                     </form>
+                    <div id="liveAlert"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
+<script type="module">
+    import { custom_alert } from '/texam/static/js/script.js';
+    let code = JSON.parse('{{ code | tojson | safe }}');
+    if (code) {
+        custom_alert(code);
+    }
+</script>
 {% endblock %}
