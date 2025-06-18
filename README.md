@@ -1,5 +1,19 @@
 # texam
 
+Small app to create quizz to prepare to temenos exams.
+
+it includes RBAC to quizz, synchronisation to real serveur, scraping of questions, aggreagation of all user answers if needed, verification and much more...
+
+## WIP
+
+The app is not fully finished/polished
+
+But i don´t have enough time to continue this project.
+
+
+
+## Installation
+
 install the matching mysql / python connector
 
 build DB:
