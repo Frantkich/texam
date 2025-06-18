@@ -51,7 +51,4 @@ def user_loader(id):
     return Users.query.filter_by(id=id).first()
 
 def minimal_dump(session):
-    session.add(Users(email='fguern@syncordisconsulting.com', password='Syncordis0609', role=1))
-    users = [["tnguyencong@syncordisconsulting.com", "TLC@2017"],["jkaiffer@syncordisconsulting.com", "TLC2017"],["pbagnis@syncordisconsulting.com",  "#Mog:mq+1uYY"],["amoquin@syncordisconsulting.com", "TLC2020"]]
-    session.commit()
     print("Admin user created.")
